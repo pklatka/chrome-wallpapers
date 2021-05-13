@@ -1,0 +1,22 @@
+{
+  "name": "google-wallpapers",
+  "version": "1.0.0",
+  "description": "Google Wallpapers allows to change your desktop wallpaper with photos available in Google Chrome",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pklatka/google-wallpapers.git"
+  },
+  "author": "Patryk Klatka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pklatka/google-wallpapers/issues"
+  },
+  "homepage": "https://github.com/pklatka/google-wallpapers#readme",
+  "dependencies": {
+    "electron": "^12.0.7"
+  }
+}
