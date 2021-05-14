@@ -20,23 +20,23 @@ window.addEventListener('DOMContentLoaded', async () => {
 })
 
 const getWallpapersList = async () => {
-    let list = null
-    if (navigator.onLine) {
-        try {
-            const response = await fetch(settings.wallpapersListSource)
-            const data = await response.json()
-            list = data
-            fs.writeFileSync(path.join(__dirname, './data/wallpapers.json'), JSON.stringify(data))
-        } catch (error) {
-            console.error(error)
+    const oldFile = fs.readFileSync(path.join(__dirname, './data/wallpapers.json'))
+    let list = JSON.parse(oldFile)
+
+    if (new Date() > new Date(list.validUntil)) {
+        if (navigator.onLine) {
+            try {
+                const response = await fetch(settings.wallpapersListSource)
+                const data = await response.json()
+                list = data
+                fs.writeFileSync(path.join(__dirname, './data/wallpapers.json'), JSON.stringify(data))
+            } catch (error) {
+                console.error(error)
+            }
+        } else {
+            console.error("User not connected to network! Using previously downloaded wallpaper list.")
         }
-    } else {
-        console.error("User not connected to network! Using previously downloaded wallpaper list.")
     }
 
-    if (list === null) {
-        const oldFile = fs.readFileSync(path.join(__dirname, './data/wallpapers.json'))
-        list = JSON.parse(oldFile)
-    }
     return list
 }
