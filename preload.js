@@ -5,17 +5,16 @@ const path = require('path')
 const settings = require(path.join(__dirname, './data/settings.json'))
 
 window.addEventListener('DOMContentLoaded', async () => {
-    const replaceText = (selector, text) => {
-        const element = document.getElementById(selector)
-        if (element) element.innerText = text
-    }
 
     const list = await getWallpapersList()
-    console.log(list)
 
-
-    for (const type of ['chrome', 'node', 'electron']) {
-        replaceText(`${type}-version`, process.versions[type])
+    const section = document.querySelector('section')
+    for (category of list.categories) {
+        let div = document.createElement('div')
+        div.className = "block"
+        div.innerHTML = `<div class="thumbnail" style="background-image: url(${category.thumbnailImageUrl});"></div>${category.categoryTitle}`
+        div.dataset.id = category.id
+        section.appendChild(div)
     }
 })
 

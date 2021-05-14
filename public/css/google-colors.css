@@ -1,0 +1,25 @@
+.g-blue{
+    color: #4285F4;
+    background-color: inherit;
+}
+
+.g-red{
+    color: #DB4437;
+    background-color: inherit;
+}
+
+.g-yellow{
+    color: #F4B400;
+    background-color: inherit;
+}
+
+.g-green{
+    color:#0F9D58;
+    background-color: inherit;
+}
+
+span.google{
+    margin: 0 -4px;
+    padding: 0;
+    display: inline-block;
+}

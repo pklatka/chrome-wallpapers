@@ -1,20 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-  <title>Hello World!</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/google-colors.css">
+  <title>Google Wallpapers</title>
 </head>
 
 <body>
-  <h1>Hello WorldWS!</h1>
-  We are using Node.js <span id="node-version"></span>,
-  Chromium <span id="chrome-version"></span>,
-  and Electron <span id="electron-version"></span>.
-
-  <!-- You can also require other files to run in this process -->
-  <script src="../renderer.js"></script>
+  <main>
+    <aside>
+      <div>
+        <header>
+          <div>
+            <span class="google g-blue">G</span>
+            <span class="google g-red">o</span>
+            <span class="google g-yellow">g</span>
+            <span class="google g-blue">g</span>
+            <span class="google g-green">l</span>
+            <span class="google g-red">e</span>
+          </div>
+          <div>
+            <span class="google g-blue">W</span>
+            <span class="google g-red">a</span>
+            <span class="google g-yellow">l</span>
+            <span class="google g-blue">l</span>
+            <span class="google g-green">p</span>
+            <span class="google g-red">a</span>
+            <span class="google g-blue">p</span>
+            <span class="google g-red">e</span>
+            <span class="google g-yellow">r</span>
+            <span class="google g-blue">s</span>
+          </div>
+        </header>
+        <div class="info" id="info">
+          To set desktop wallpaper just click a photo you want.
+          Click on a wallpaper or a category block with right mouse button to include it to schedule. When you select a
+          category, all photos will be included.
+        </div>
+        <div class="options">
+          <h2>Schedule options</h2>
+          <div class="interval">
+            <div> Change picture every:
+            </div>
+            <div class="interval-input">
+              <input type="number" name="interval-value" id="interval-value" class="interval-value" min="1">
+              <select name="interval" id="interval" class="interval">
+                <option value="1">Seconds</option>
+                <option value="60">Minutes</option>
+                <option value="3600">Hours</option>
+                <option value="86400">Days</option>
+                <option value="2592000">Months</option>
+                <option value="31104000">Years</option>
+                <option value="startup">On system startup</option>
+              </select>
+            </div>
+          </div>
+          <div class="shuffle">Shuffle: <input class="shuffle" type="checkbox" name="shuffle" id="shuffle"></div>
+          <div class="buttons">
+            <button id="show">Show selected</button>
+            <button id="clear">Clear selected</button>
+            <button id="all">Select all</button>
+          </div>
+        </div>
+      </div>
+      <footer><a href="https://www.klatka.it">@pklatka</a></footer>
+    </aside>
+    <section>
+    </section>
+  </main>
 </body>
 
 </html>

@@ -1,0 +1,203 @@
+/* 
+Colors
+#0081AF
+#222E50
+#EDE7D9
+
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    background-color: whitesmoke;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+main{
+    width: 90vw;
+    height: 90vh;
+    background-color: #EDE7D9;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    display: flex;
+    
+}
+
+header{
+    font-weight: 500;
+    font-size: 40px;
+    text-align: center;
+    background-color: inherit;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position:sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    user-select: none;
+}
+
+div{
+    background-color: inherit;
+}
+
+h2{
+    background-color: inherit;
+    text-align: center;
+}
+
+aside{
+    background-color: #222E50;
+    max-width: 325px;
+    height: 100%;
+    color: #e4e4e4;
+    overflow-y: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+}
+
+div.info{
+    text-align: justify;
+    padding: 0 15px;
+    padding-top: 10px;
+    font-size: 15px;
+}
+
+div.options{
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+div.interval{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+input.interval-value{
+    width: 50px;
+    border: 1px solid gray;
+    height: 22px;
+    border-radius: 5px;
+    padding: 0 5px;
+    margin-right: 2px;
+    margin-left: 5px;
+    margin-top: 3px;
+}
+
+
+select.interval{
+    margin-left: 3px;
+    border-radius: 5px;
+    margin-top: 3px;
+    height: 24px;
+}
+
+div.shuffle{
+    margin-top: 10px;
+}
+
+input.shuffle{
+    margin-left: 5px;
+}
+
+div.buttons{
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+button{
+    display: inline-block;
+    padding: 0.7em 1.4em;
+    margin: 2px 0.3em 0.3em 2px;
+    border-radius: 0.15em;
+    width: 200px;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: 'Roboto',sans-serif;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: #e4e4e4;
+    background-color: #0081AF    ;
+    box-shadow: inset 0 -0.6em 0 -0.35em rgb(0 0 0 / 17%);
+    text-align: center;
+    position: relative;
+    border:none;
+    outline:none;
+}
+
+button:hover{
+    cursor: pointer;
+}
+
+button:active{
+    top: 0.1em;
+    border:none;
+    outline: none;
+}
+
+footer{
+    background-color: inherit;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+a{
+    color: inherit;
+    display: block;
+    background-color: inherit;
+    text-decoration: none;
+}
+
+a:visited{
+    background-color: inherit;
+}
+
+section{
+    background-color: inherit;
+    flex-grow: 1;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-evenly;
+    align-self: baseline;
+    height: 100%;
+    overflow-y: auto;
+    margin: auto auto;
+    align-content: flex-start;
+}
+
+div.block{ 
+    margin: 15px;
+    min-width: 150px;
+    max-width: 150px;
+    height: 170px;
+    flex-basis: 24%;
+    position: relative;
+}
+
+
+div.thumbnail{
+    height: 150px;
+    background-size: cover;
+    cursor: pointer;
+}
+
