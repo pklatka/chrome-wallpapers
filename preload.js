@@ -38,8 +38,8 @@ window.addEventListener('DOMContentLoaded', async () => {
             thumbnail.style = `background-image: url(${photo.thumbnailImageUrl});`
             thumbnail.dataset.id = category.id
             thumbnail.dataset.type = "wallpapers"
+            thumbnail.title = photo.title
             div.appendChild(thumbnail)
-            // div.innerHTML += photo.title
 
             wallpapers.appendChild(div)
         }
