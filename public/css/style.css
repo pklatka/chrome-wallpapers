@@ -16,15 +16,14 @@ Colors
 }
 
 main{
-    width: 90vw;
-    height: 90vh;
+    width: 100vw;
+    height: 100vh;
     background-color: #EDE7D9;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
     display: flex;
-    
 }
 
 header{
@@ -56,6 +55,7 @@ h2{
 aside{
     background-color: #222E50;
     max-width: 325px;
+    min-width: 325px;
     height: 100%;
     color: #e4e4e4;
     overflow-y: auto;
@@ -63,6 +63,7 @@ aside{
     justify-content: space-between;
     align-items: center;
     flex-direction: column;
+    position: relative;
 }
 
 div.info{
@@ -100,7 +101,6 @@ input.interval-value{
     margin-top: 3px;
 }
 
-
 select.interval{
     margin-left: 3px;
     border-radius: 5px;
@@ -124,7 +124,7 @@ div.buttons{
     align-items: center;
 }
 
-button{
+button.options{
     display: inline-block;
     padding: 0.7em 1.4em;
     margin: 2px 0.3em 0.3em 2px;
@@ -174,30 +174,52 @@ a:visited{
 section{
     background-color: inherit;
     flex-grow: 1;
-    display: inline-flex;
+    display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     align-self: baseline;
-    height: 100%;
+    height: calc(100% - 20px);
     overflow-y: auto;
-    margin: auto auto;
+    margin:  auto;
     align-content: flex-start;
+    padding: 10px
 }
+
 
 div.block{ 
     margin: 15px;
     min-width: 150px;
     max-width: 150px;
     height: 170px;
-    flex-basis: 24%;
+    flex-basis: 19%;
     position: relative;
 }
-
 
 div.thumbnail{
     height: 150px;
     background-size: cover;
     cursor: pointer;
+}
+
+.hidden{
+    display: none !important;
+}
+
+button#back{
+    position: absolute;
+    top: 5px;
+    right:  5px;
+    z-index: 100;
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+    background-image: url('../img/arrow.png');
+    background-size: contain;
+    background-position: center center;
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 50%;
+    outline: none;
 }
 

@@ -8,15 +8,67 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const list = await getWallpapersList()
 
-    const section = document.querySelector('section')
+    const main = document.querySelector('main')
+
+    const section = document.createElement('section')
+    section.id = "categories"
+
     for (category of list.categories) {
         let div = document.createElement('div')
         div.className = "block"
-        div.innerHTML = `<div class="thumbnail" style="background-image: url(${category.thumbnailImageUrl});"></div>${category.categoryTitle}`
-        div.dataset.id = category.id
+        let thumbnail = document.createElement('div')
+        thumbnail.className = 'thumbnail'
+        thumbnail.style = `background-image: url(${category.thumbnailImageUrl});`
+        thumbnail.dataset.id = category.id
+        thumbnail.dataset.type = "categories"
+        div.appendChild(thumbnail)
+        div.innerHTML += category.categoryTitle
         section.appendChild(div)
+
+        // Create section for category items
+        const wallpapers = document.createElement('section')
+        wallpapers.id = category.id
+        wallpapers.className = 'hidden'
+        for (photo of category.wallpapers) {
+            let div = document.createElement('div')
+            div.className = "block"
+            let thumbnail = document.createElement('div')
+            thumbnail.className = 'thumbnail'
+            thumbnail.dataset.imageUrl = photo.imageUrl
+            thumbnail.style = `background-image: url(${photo.thumbnailImageUrl});`
+            thumbnail.dataset.id = category.id
+            thumbnail.dataset.type = "wallpapers"
+            div.appendChild(thumbnail)
+            // div.innerHTML += photo.title
+
+            wallpapers.appendChild(div)
+        }
+
+        main.appendChild(wallpapers)
     }
+
+    main.appendChild(section)
+
+    document.querySelector('button#back').addEventListener('click', e => {
+        document.querySelector('section:not(.hidden)').classList.add('hidden')
+        document.querySelector(`section#categories`).classList.remove('hidden')
+        e.target.classList.add('hidden')
+    })
+    document.querySelectorAll('div.thumbnail').forEach(el => el.addEventListener('click', mainRender))
 })
+
+const mainRender = e => {
+    if (e.target.dataset.type === "categories") {
+        document.querySelector(`section#categories`).classList.add('hidden')
+        document.querySelector(`section#${e.target.dataset.id}`).classList.remove('hidden')
+        document.querySelector('button#back').classList.remove('hidden')
+    } else {
+        document.querySelector(`section#categories`).classList.remove('hidden')
+        document.querySelector(`section#${e.target.dataset.id}`).classList.add('hidden')
+        document.querySelector('button#back').classList.add('hidden')
+    }
+    console.log(e)
+}
 
 const getWallpapersList = async () => {
     const oldFile = fs.readFileSync(path.join(__dirname, './data/wallpapers.json'))
