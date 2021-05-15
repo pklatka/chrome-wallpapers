@@ -227,6 +227,7 @@ button#back{
 }
 
 div.checked{
+    pointer-events: none;
     background-image: url('../img/check.png');
     background-size: contain;
     background-position: center center;

@@ -75,10 +75,20 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 const addToSchedule = async e => {
     e.preventDefault()
-    if (e.target.innerHTML != '') {
-        e.target.innerHTML = ''
+    if (e.target.dataset.type === "categories") {
+        if (e.target.innerHTML != '') {
+            e.target.innerHTML = ''
+            document.querySelectorAll(`div[data-id="${e.target.dataset.id}"]`).forEach(el => el.innerHTML = '')
+        } else {
+            e.target.innerHTML = checked
+            document.querySelectorAll(`div[data-id="${e.target.dataset.id}"]`).forEach(el => el.innerHTML = checked)
+        }
     } else {
-        e.target.innerHTML = checked
+        if (e.target.innerHTML != '') {
+            e.target.innerHTML = ''
+        } else {
+            e.target.innerHTML = checked
+        }
     }
 }
 
