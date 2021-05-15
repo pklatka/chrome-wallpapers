@@ -5,6 +5,7 @@ const path = require('path')
 const wallpaper = require('wallpaper')
 const axios = require('axios')
 const settings = require(path.join(__dirname, './data/settings.json'))
+const { ipcRenderer } = require('electron')
 
 const loader = '<div class="lds-ellipsis" ><div></div><div></div><div></div><div></div></div>'
 const checked = '<div class="checked"></div>'
@@ -64,7 +65,24 @@ window.addEventListener('DOMContentLoaded', async () => {
         el.addEventListener('contextmenu', addToSchedule)
     })
 
+    document.querySelector('a').addEventListener('click', e => {
+        e.preventDefault()
+        ipcRenderer.invoke('openExternalBrowser', e.target.href)
+    })
+
+    document.querySelector('select').addEventListener('change', e => {
+        if (e.target.selectedIndex == 6) {
+            document.querySelector('input#interval-value').disabled = true
+            document.querySelector('input#interval-value').classList.add('disabled')
+        } else {
+            document.querySelector('input#interval-value').disabled = false
+            document.querySelector('input#interval-value').classList.remove('disabled')
+        }
+    })
     document.querySelector('button#show').addEventListener('click', () => { })
+    document.querySelector('button#save').addEventListener('click', () => {
+        alert('Saved!')
+    })
     document.querySelector('button#clear').addEventListener('click', () => {
         document.querySelectorAll('div.checked').forEach(el => el.remove())
     })
