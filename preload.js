@@ -7,11 +7,15 @@ const axios = require('axios')
 const settings = require(path.join(__dirname, './data/settings.json'))
 const { ipcRenderer } = require('electron')
 const temporarySelected = []
+const savedConfiguration = require(path.join(__dirname, './data/interval.json'))
 
 const loader = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
 const checked = '<div class="checked"></div>'
 
 window.addEventListener('DOMContentLoaded', async () => {
+    document.querySelector('input#interval-value').value = savedConfiguration.inputValue == 0 ? '' : savedConfiguration.inputValue
+    document.querySelector('select').selectedIndex = savedConfiguration.selectedIndex
+    document.querySelector('input#shuffle').checked = savedConfiguration.shuffle
 
     const list = await getWallpapersList()
 
@@ -72,15 +76,20 @@ window.addEventListener('DOMContentLoaded', async () => {
     })
 
     document.querySelector('select').addEventListener('change', e => {
+        const input = document.querySelector('input#interval-value')
         if (e.target.selectedIndex == 6) {
-            document.querySelector('input#interval-value').disabled = true
-            document.querySelector('input#interval-value').classList.add('disabled')
+            input.disabled = true
+            input.classList.add('disabled')
+            input.value = ''
         } else {
-            document.querySelector('input#interval-value').disabled = false
-            document.querySelector('input#interval-value').classList.remove('disabled')
+            input.disabled = false
+            input.classList.remove('disabled')
         }
     })
+
     document.querySelector('button#show').addEventListener('click', e => {
+        if (savedConfiguration.wallpapers.length <= 0) return;
+
         if (!e.target.classList.contains('hide')) {
             document.querySelectorAll('div.checked').forEach(el => {
                 temporarySelected.push(el.parentElement)
@@ -89,15 +98,49 @@ window.addEventListener('DOMContentLoaded', async () => {
             e.target.classList.add('hide')
             e.target.textContent = 'HIDE SELECTED'
             // Read from file and select saved photos
-
+            savedConfiguration.wallpapers.forEach(el => {
+                if (el.type === 'wallpaper') {
+                    document.querySelector(`div[data-image-url="${el.imageUrl}"]`).innerHTML = checked
+                } else {
+                    console.log(document.querySelector(`div[data-type="wallpapers"][data-id="${el.id}"]`))
+                    document.querySelector(`div[data-type="categories"][data-id="${el.id}"]`).innerHTML = checked
+                }
+            })
         } else {
+            document.querySelectorAll('div.checked').forEach(el => {
+                el.parentElement.innerHTML = ''
+            })
             temporarySelected.forEach(el => el.innerHTML = checked)
             e.target.classList.remove('hide')
             e.target.textContent = 'SHOW SELECTED'
         }
     })
+
     document.querySelector('button#save').addEventListener('click', () => {
-        alert('Saved!')
+        const inputValue = Number(document.querySelector('input#interval-value').value)
+        const selectedIndex = document.querySelector('select').selectedIndex
+        const interval = inputValue * Number(document.querySelector('select').value) * 1000
+        const shuffle = document.querySelector('input#shuffle').checked
+        const categories = []
+        let wallpapers = [...document.querySelectorAll('div.checked')].map(el => {
+            if (el.parentElement.dataset.type === "wallpapers") {
+                return { imageUrl: el.parentElement.dataset.imageUrl, active: false, type: 'wallpaper' }
+            } else if (el.parentElement.dataset.type === "categories") {
+                categories.push(el.parentElement.dataset.id)
+                return { id: el.parentElement.dataset.id, type: 'category' }
+            }
+        })
+
+        if (wallpapers.length <= 0) {
+            return notify("No wallpapers selected")
+        }
+
+        wallpapers[0].active = true
+        fs.writeFileSync(path.join(__dirname, './data/interval.json'), JSON.stringify({
+            interval, inputValue, selectedIndex, shuffle, categories, wallpapers
+        }))
+
+        notify("Schedule saved")
     })
     document.querySelector('button#clear').addEventListener('click', () => {
         document.querySelectorAll('div.checked').forEach(el => el.remove())
@@ -176,4 +219,8 @@ const getWallpapersList = async () => {
     }
 
     return list
+}
+
+const notify = (msg) => {
+    alert(msg)
 }

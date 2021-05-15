@@ -49,15 +49,15 @@
             <div> Change picture every:
             </div>
             <div class="interval-input">
-              <input type="number" name="interval-value" id="interval-value" class="interval-value" min="1">
+              <input type="number" name="interval-value" id="interval-value" class="interval-value" min="1" value="6">
               <select name="interval" id="interval" class="interval">
                 <option value="1">Seconds</option>
                 <option value="60">Minutes</option>
-                <option value="3600">Hours</option>
+                <option value="3600" selected>Hours</option>
                 <option value="86400">Days</option>
                 <option value="2592000">Months</option>
                 <option value="31104000">Years</option>
-                <option value="startup">On system startup</option>
+                <option value="0">On system startup</option>
               </select>
             </div>
           </div>
