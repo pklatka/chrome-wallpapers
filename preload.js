@@ -7,6 +7,7 @@ const axios = require('axios')
 const settings = require(path.join(__dirname, './data/settings.json'))
 
 const loader = '<div class="lds-ellipsis" ><div></div><div></div><div></div><div></div></div>'
+const checked = '<div class="checked"></div>'
 
 window.addEventListener('DOMContentLoaded', async () => {
 
@@ -58,8 +59,20 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.querySelector(`section#categories`).classList.remove('hidden')
         e.target.classList.add('hidden')
     })
-    document.querySelectorAll('div.thumbnail').forEach(el => el.addEventListener('click', mainRender))
+    document.querySelectorAll('div.thumbnail').forEach(el => {
+        el.addEventListener('click', mainRender)
+        el.addEventListener('contextmenu', addToSchedule)
+    })
 })
+
+const addToSchedule = async e => {
+    e.preventDefault()
+    if (e.target.innerHTML != '') {
+        e.target.innerHTML = ''
+    } else {
+        e.target.innerHTML = checked
+    }
+}
 
 const mainRender = async e => {
     if (e.target.dataset.type === "categories") {

@@ -226,3 +226,11 @@ button#back{
     outline: none;
 }
 
+div.checked{
+    background-image: url('../img/check.png');
+    background-size: contain;
+    background-position: center center;
+    background-color: transparent;
+    width: 50px;
+    height: 50px;
+}
