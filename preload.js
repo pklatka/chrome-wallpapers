@@ -2,6 +2,8 @@
 // It has the same sandbox as a Chrome extension.
 const fs = require('fs')
 const path = require('path')
+const wallpaper = require('wallpaper')
+const axios = require('axios')
 const settings = require(path.join(__dirname, './data/settings.json'))
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -57,17 +59,19 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.querySelectorAll('div.thumbnail').forEach(el => el.addEventListener('click', mainRender))
 })
 
-const mainRender = e => {
+const mainRender = async e => {
     if (e.target.dataset.type === "categories") {
         document.querySelector(`section#categories`).classList.add('hidden')
         document.querySelector(`section#${e.target.dataset.id}`).classList.remove('hidden')
         document.querySelector('button#back').classList.remove('hidden')
     } else {
-        document.querySelector(`section#categories`).classList.remove('hidden')
-        document.querySelector(`section#${e.target.dataset.id}`).classList.add('hidden')
-        document.querySelector('button#back').classList.add('hidden')
+        const res = await axios({
+            url: e.target.dataset.imageUrl,
+            responseType: 'arraybuffer'
+        })
+        fs.writeFileSync(path.join(__dirname, './data/wallpaper.jpg'), Buffer.from(res.data, 'binary'))
+        await wallpaper.set('./data/wallpaper.jpg')
     }
-    console.log(e)
 }
 
 const getWallpapersList = async () => {
