@@ -176,7 +176,6 @@ section{
     flex-grow: 1;
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
     justify-content: flex-start;
     align-self: baseline;
     height: calc(100% - 20px);
@@ -200,6 +199,10 @@ div.thumbnail{
     height: 150px;
     background-size: cover;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s;
 }
 
 .hidden{

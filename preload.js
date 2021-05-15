@@ -6,6 +6,8 @@ const wallpaper = require('wallpaper')
 const axios = require('axios')
 const settings = require(path.join(__dirname, './data/settings.json'))
 
+const loader = '<div class="lds-ellipsis" ><div></div><div></div><div></div><div></div></div>'
+
 window.addEventListener('DOMContentLoaded', async () => {
 
     const list = await getWallpapersList()
@@ -65,12 +67,17 @@ const mainRender = async e => {
         document.querySelector(`section#${e.target.dataset.id}`).classList.remove('hidden')
         document.querySelector('button#back').classList.remove('hidden')
     } else {
+        if (e.target.innerHTML !== '') {
+            return
+        }
+        e.target.innerHTML += loader
         const res = await axios({
             url: e.target.dataset.imageUrl,
             responseType: 'arraybuffer'
         })
         fs.writeFileSync(path.join(__dirname, './data/wallpaper.jpg'), Buffer.from(res.data, 'binary'))
         await wallpaper.set('./data/wallpaper.jpg')
+        e.target.innerHTML = ''
     }
 }
 
