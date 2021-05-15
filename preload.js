@@ -63,6 +63,14 @@ window.addEventListener('DOMContentLoaded', async () => {
         el.addEventListener('click', mainRender)
         el.addEventListener('contextmenu', addToSchedule)
     })
+
+    document.querySelector('button#show').addEventListener('click', () => { })
+    document.querySelector('button#clear').addEventListener('click', () => {
+        document.querySelectorAll('div.checked').forEach(el => el.remove())
+    })
+    document.querySelector('button#all').addEventListener('click', () => {
+        document.querySelectorAll('div.thumbnail').forEach(el => el.innerHTML = checked)
+    })
 })
 
 const addToSchedule = async e => {
