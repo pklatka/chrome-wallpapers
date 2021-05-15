@@ -103,9 +103,19 @@ const addToSchedule = async e => {
         }
     } else {
         if (e.target.innerHTML != '') {
+            const categoryBlock = document.querySelector(`section#categories div[data-id="${e.target.dataset.id}"]`)
+            if (categoryBlock.innerHTML != '') {
+                categoryBlock.innerHTML = ''
+            }
             e.target.innerHTML = ''
         } else {
             e.target.innerHTML = checked
+            for (el of document.querySelectorAll(`section#${e.target.dataset.id}>div>div`)) {
+                if (el.innerHTML == '') {
+                    return;
+                }
+            }
+            document.querySelector(`section#categories div[data-id="${e.target.dataset.id}"]`).innerHTML = checked
         }
     }
 }
