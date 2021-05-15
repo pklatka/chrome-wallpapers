@@ -19,6 +19,7 @@ main{
     width: 100vw;
     height: 100vh;
     background-color: #EDE7D9;
+    /* background-color: white; */
     position: absolute;
     top: 50%;
     left: 50%;

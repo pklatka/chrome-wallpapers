@@ -6,8 +6,9 @@ const wallpaper = require('wallpaper')
 const axios = require('axios')
 const settings = require(path.join(__dirname, './data/settings.json'))
 const { ipcRenderer } = require('electron')
+const temporarySelected = []
 
-const loader = '<div class="lds-ellipsis" ><div></div><div></div><div></div><div></div></div>'
+const loader = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
 const checked = '<div class="checked"></div>'
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -79,7 +80,22 @@ window.addEventListener('DOMContentLoaded', async () => {
             document.querySelector('input#interval-value').classList.remove('disabled')
         }
     })
-    document.querySelector('button#show').addEventListener('click', () => { })
+    document.querySelector('button#show').addEventListener('click', e => {
+        if (!e.target.classList.contains('hide')) {
+            document.querySelectorAll('div.checked').forEach(el => {
+                temporarySelected.push(el.parentElement)
+                el.parentElement.innerHTML = ''
+            })
+            e.target.classList.add('hide')
+            e.target.textContent = 'HIDE SELECTED'
+            // Read from file and select saved photos
+
+        } else {
+            temporarySelected.forEach(el => el.innerHTML = checked)
+            e.target.classList.remove('hide')
+            e.target.textContent = 'SHOW SELECTED'
+        }
+    })
     document.querySelector('button#save').addEventListener('click', () => {
         alert('Saved!')
     })
