@@ -1,5 +1,13 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
+
+// TODO
+//  - loader when downloading new wallpaper list
+//  - more notify() function usage
+//  - more try-catch
+//  - more code comments
+//  - add background process for schedule
+
 const fs = require('fs')
 const path = require('path')
 const wallpaper = require('wallpaper')
@@ -246,23 +254,23 @@ const notify = (msg, status = 0, timeout = 5000) => {
 
     switch (status) {
         case 0:
-            notificationBlock.textContent = `Success! ${msg}`
+            notificationBlock.textContent = `Success: ${msg}`
             notificationBlock.className = 'notify success'
             break;
         case 1:
-            notificationBlock.textContent = `Information! ${msg}`
+            notificationBlock.textContent = `Information: ${msg}`
             notificationBlock.className = 'notify information'
             break;
         case 2:
-            notificationBlock.textContent = `Warning! ${msg}`
+            notificationBlock.textContent = `Warning: ${msg}`
             notificationBlock.className = 'notify warning'
             break;
         case 3:
-            notificationBlock.textContent = `Danger! ${msg}`
+            notificationBlock.textContent = `Danger: ${msg}`
             notificationBlock.className = 'notify danger'
             break;
         default:
-            notificationBlock.textContent = `Information! ${msg}`
+            notificationBlock.textContent = `Information: ${msg}`
             notificationBlock.className = 'notify information'
             break;
     }
