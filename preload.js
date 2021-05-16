@@ -7,15 +7,15 @@ const axios = require('axios')
 const settings = require(path.join(__dirname, './data/settings.json'))
 const { ipcRenderer } = require('electron')
 const temporarySelected = []
-const savedConfiguration = require(path.join(__dirname, './data/interval.json'))
+const schedule = require(path.join(__dirname, './data/schedule.json'))
 
 const loader = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
 const checked = '<div class="checked"></div>'
 
 window.addEventListener('DOMContentLoaded', async () => {
-    document.querySelector('input#interval-value').value = savedConfiguration.inputValue == 0 ? '' : savedConfiguration.inputValue
-    document.querySelector('select').selectedIndex = savedConfiguration.selectedIndex
-    document.querySelector('input#shuffle').checked = savedConfiguration.shuffle
+    document.querySelector('input#interval-value').value = schedule.inputValue == 0 ? '' : schedule.inputValue
+    document.querySelector('select').selectedIndex = schedule.selectedIndex
+    document.querySelector('input#shuffle').checked = schedule.shuffle
 
     const list = await getWallpapersList()
 
@@ -88,7 +88,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     })
 
     document.querySelector('button#show').addEventListener('click', e => {
-        if (savedConfiguration.wallpapers.length <= 0) return;
+        if (schedule.wallpapers.length <= 0) return;
 
         if (!e.target.classList.contains('hide')) {
             document.querySelectorAll('div.checked').forEach(el => {
@@ -98,7 +98,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             e.target.classList.add('hide')
             e.target.textContent = 'HIDE SELECTED'
             // Read from file and select saved photos
-            savedConfiguration.wallpapers.forEach(el => {
+            schedule.wallpapers.forEach(el => {
                 if (el.type === 'wallpaper') {
                     document.querySelector(`div[data-image-url="${el.imageUrl}"]`).innerHTML = checked
                 } else {
@@ -136,7 +136,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
 
         wallpapers[0].active = true
-        fs.writeFileSync(path.join(__dirname, './data/interval.json'), JSON.stringify({
+        fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify({
             interval, inputValue, selectedIndex, shuffle, categories, wallpapers
         }))
 
@@ -210,6 +210,20 @@ const getWallpapersList = async () => {
                 const data = await response.json()
                 list = data
                 fs.writeFileSync(path.join(__dirname, './data/wallpapers.json'), JSON.stringify(data))
+                // Autoupdate category photos in schedule
+                const newSchedule = { ...schedule }
+                schedule.categories.forEach(category => {
+                    const wallpaperList = list.categories.find(el => el.id == category)
+                    if (wallpaperList) {
+                        wallpaperList.wallpapers.forEach(wallpaper => {
+                            if (!schedule.wallpapers.find(el => el.imageUrl == wallpaper.imageUrl)) {
+                                newSchedule.wallpapers.push({ imageUrl: wallpaper.imageUrl, active: false, type: 'wallpaper' })
+                            }
+                        })
+                    }
+                })
+
+                fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
             } catch (error) {
                 console.error(error)
             }
