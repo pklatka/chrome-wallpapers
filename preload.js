@@ -132,7 +132,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         })
 
         if (wallpapers.length <= 0) {
-            return notify("No wallpapers selected")
+            return notify("No wallpapers selected.", 2)
         }
 
         wallpapers[0].active = true
@@ -140,7 +140,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             interval, inputValue, selectedIndex, shuffle, categories, wallpapers
         }))
 
-        notify("Schedule saved")
+        notify("Schedule saved.")
     })
     document.querySelector('button#clear').addEventListener('click', () => {
         document.querySelectorAll('div.checked').forEach(el => el.remove())
@@ -235,6 +235,42 @@ const getWallpapersList = async () => {
     return list
 }
 
-const notify = (msg) => {
-    alert(msg)
+const notify = (msg, status = 0, timeout = 5000) => {
+    // Status codes:
+    //  - 0 -> Success!
+    //  - 1 -> Info!
+    //  - 2 -> Warning!
+    //  - 3 -> Danger!
+
+    const notificationBlock = document.querySelector('div.notify')
+
+    switch (status) {
+        case 0:
+            notificationBlock.textContent = `Success! ${msg}`
+            notificationBlock.className = 'notify success'
+            break;
+        case 1:
+            notificationBlock.textContent = `Information! ${msg}`
+            notificationBlock.className = 'notify information'
+            break;
+        case 2:
+            notificationBlock.textContent = `Warning! ${msg}`
+            notificationBlock.className = 'notify warning'
+            break;
+        case 3:
+            notificationBlock.textContent = `Danger! ${msg}`
+            notificationBlock.className = 'notify danger'
+            break;
+        default:
+            notificationBlock.textContent = `Information! ${msg}`
+            notificationBlock.className = 'notify information'
+            break;
+    }
+
+    notificationBlock.classList.add('active')
+
+    setTimeout(() => {
+        notificationBlock.classList.remove('active')
+    }, timeout)
+    // alert(msg)
 }

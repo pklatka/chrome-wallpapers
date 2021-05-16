@@ -1,0 +1,39 @@
+div.notify{
+    width: 60%;
+    height: 70px;
+    position: absolute;
+    top: -150px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #2196F3;
+    color: whitesmoke;
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    flex-wrap: wrap;
+    padding: 5px;
+    transition: 0.5s;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.active{
+    top: 15px !important;
+}
+
+.danger{
+    background-color: #f44336 !important;
+}
+
+.success{
+    background-color: #04AA6D !important;
+}
+
+.information{
+    background-color: #2196F3 !important;
+}
+
+.warning{
+    background-color: #ff9800 !important;
+}
