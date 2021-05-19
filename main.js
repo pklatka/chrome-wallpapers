@@ -2,17 +2,33 @@
 const { app, BrowserWindow, shell, ipcMain } = require('electron')
 const path = require('path')
 
-function createWindow() {
+const appFolder = path.dirname(process.execPath)
+const updateExe = path.resolve(appFolder, '..', 'Update.exe')
+const exeName = path.basename(process.execPath)
+
+app.setLoginItemSettings({
+  openAtLogin: true,
+  path: updateExe,
+  openAsHidden: true,
+  args: [
+    '--processStart', `"${exeName}"`,
+    '--process-start-args', `"--hidden"`,
+  ]
+})
+
+function createWindow(show=true) {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         width: 920,
         height: 670,
+        show,
+        paintWhenInitiallyHidden: true, // sprawdz na false czy dziala
+        autoHideMenuBar: true,
+        title: 'Google Wallpapers',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
         }
     })
-
-    mainWindow.setMenuBarVisibility(false)
 
     // and load the index.html of the app.
     mainWindow.loadFile(path.join(__dirname, './public/index.html'))
@@ -25,7 +41,7 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-    createWindow()
+    createWindow(process.argv.every(el=>!el.includes('--hidden')))
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
