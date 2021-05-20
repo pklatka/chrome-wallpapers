@@ -24,7 +24,7 @@ function createWindow(show=true) {
         show,
         paintWhenInitiallyHidden: true, // sprawdz na false czy dziala
         autoHideMenuBar: true,
-        title: 'Google Wallpapers',
+        title: 'Chrome Wallpapers',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
         }
