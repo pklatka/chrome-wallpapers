@@ -6,237 +6,244 @@ Colors
 
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap");
 
-*{
-    margin: 0;
-    padding: 0;
-    background-color: whitesmoke;
-    font-family: 'Noto Sans JP', sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  background-color: whitesmoke;
+  font-family: "Noto Sans JP", sans-serif;
 }
 
-main{
-    width: 100vw;
-    height: 100vh;
-    background-color: #EDE7D9;
-    /* background-color: white; */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    display: flex;
+main {
+  width: 100vw;
+  height: 100vh;
+  background-color: #ede7d9;
+  /* background-color: white; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
 }
 
-header{
-    font-weight: 500;
-    font-size: 40px;
-    text-align: center;
-    background-color: inherit;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    position:sticky;
-    top: 0;
-    left: 0;
-    width: 100%;
-    user-select: none;
+header {
+  font-weight: 500;
+  font-size: 40px;
+  text-align: center;
+  background-color: inherit;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  user-select: none;
 }
 
-div{
-    background-color: inherit;
+div {
+  background-color: inherit;
 }
 
-h2{
-    background-color: inherit;
-    text-align: center;
+h2 {
+  background-color: inherit;
+  text-align: center;
 }
 
-aside{
-    background-color: #222E50;
-    max-width: 325px;
-    min-width: 325px;
-    height: 100%;
-    color: #e4e4e4;
-    overflow-y: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: column;
-    position: relative;
+aside {
+  background-color: #222e50;
+  max-width: 325px;
+  min-width: 325px;
+  height: 100%;
+  color: #e4e4e4;
+  overflow-y: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
 }
 
-div.info{
-    text-align: justify;
-    padding: 0 15px;
-    padding-top: 10px;
-    font-size: 15px;
+div.info {
+  text-align: justify;
+  padding: 0 15px;
+  padding-top: 10px;
+  font-size: 15px;
 }
 
-div.options{
-    padding: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+div.options {
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-div.interval{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 5px;
-    margin-bottom: 5px;
+div.interval {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
-input.interval-value{
-    width: 50px;
-    border: 1px solid gray;
-    height: 22px;
-    border-radius: 5px;
-    padding: 0 5px;
-    margin-right: 2px;
-    margin-left: 5px;
-    margin-top: 3px;
+input.interval-value {
+  width: 50px;
+  border: 1px solid gray;
+  height: 22px;
+  border-radius: 5px;
+  padding: 0 5px;
+  margin-right: 2px;
+  margin-left: 5px;
+  margin-top: 3px;
 }
 
-select.interval{
-    margin-left: 3px;
-    border-radius: 5px;
-    margin-top: 3px;
-    height: 24px;
+select.interval {
+  margin-left: 3px;
+  border-radius: 5px;
+  margin-top: 3px;
+  height: 24px;
 }
 
-div.shuffle{
-    margin-top: 10px;
+div.checkbox {
+  margin-top: 10px;
+  margin-right: 15px;
+  margin-left: 15px;
 }
 
-input.shuffle{
-    margin-left: 5px;
+div.checkbox-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-div.buttons{
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+input.checkbox {
+  margin-left: 5px;
 }
 
-button.options{
-    display: inline-block;
-    padding: 0.7em 1.4em;
-    margin: 2px 0.3em 0.3em 2px;
-    border-radius: 0.15em;
-    width: 200px;
-    box-sizing: border-box;
-    text-decoration: none;
-    font-family: 'Roboto',sans-serif;
-    text-transform: uppercase;
-    font-weight: 400;
-    color: #e4e4e4;
-    background-color: #0081AF    ;
-    box-shadow: inset 0 -0.6em 0 -0.35em rgb(0 0 0 / 17%);
-    text-align: center;
-    position: relative;
-    border:none;
-    outline:none;
+div.buttons {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
-button:hover{
-    cursor: pointer;
+button.options {
+  display: inline-block;
+  padding: 0.7em 1.4em;
+  margin: 2px 0.3em 0.3em 2px;
+  border-radius: 0.15em;
+  width: 200px;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #e4e4e4;
+  background-color: #0081af;
+  box-shadow: inset 0 -0.6em 0 -0.35em rgb(0 0 0 / 17%);
+  text-align: center;
+  position: relative;
+  border: none;
+  outline: none;
 }
 
-button:active{
-    top: 0.1em;
-    border:none;
-    outline: none;
+button:hover {
+  cursor: pointer;
 }
 
-footer{
-    background-color: inherit;
-    padding-bottom: 5px;
-    text-align: center;
+button:active {
+  top: 0.1em;
+  border: none;
+  outline: none;
 }
 
-a{
-    color: inherit;
-    display: block;
-    background-color: inherit;
-    text-decoration: none;
+footer {
+  background-color: inherit;
+  padding-bottom: 5px;
+  text-align: center;
 }
 
-a:visited{
-    background-color: inherit;
+a {
+  color: inherit;
+  display: block;
+  background-color: inherit;
+  text-decoration: none;
 }
 
-section{
-    background-color: inherit;
-    flex-grow: 1;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-self: baseline;
-    height: calc(100% - 20px);
-    overflow-y: auto;
-    margin:  auto;
-    align-content: flex-start;
-    padding: 10px
+a:visited {
+  background-color: inherit;
 }
 
-
-div.block{ 
-    margin: 15px;
-    min-width: 150px;
-    max-width: 150px;
-    height: 170px;
-    flex-basis: 19%;
-    position: relative;
+section {
+  background-color: inherit;
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-self: baseline;
+  height: calc(100% - 20px);
+  overflow-y: auto;
+  margin: auto;
+  align-content: flex-start;
+  padding: 10px;
 }
 
-div.thumbnail{
-    height: 150px;
-    background-size: cover;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: 0.3s;
+div.block {
+  margin: 15px;
+  min-width: 150px;
+  max-width: 150px;
+  height: 170px;
+  flex-basis: 19%;
+  position: relative;
 }
 
-.hidden{
-    display: none !important;
+div.thumbnail {
+  height: 150px;
+  background-size: cover;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s;
 }
 
-button#back{
-    position: absolute;
-    top: 5px;
-    right:  5px;
-    z-index: 100;
-    width: 30px;
-    height: 30px;
-    overflow: hidden;
-    background-image: url('../img/arrow.png');
-    background-size: contain;
-    background-position: center center;
-    background-color: transparent;
-    border: 2px solid white;
-    border-radius: 50%;
-    outline: none;
+.hidden {
+  display: none !important;
 }
 
-div.checked{
-    pointer-events: none;
-    background-image: url('../img/check.png');
-    background-size: contain;
-    background-position: center center;
-    background-color: transparent;
-    width: 50px;
-    height: 50px;
+button#back {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 100;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  background-image: url("../img/arrow.png");
+  background-size: contain;
+  background-position: center center;
+  background-color: transparent;
+  border: 2px solid white;
+  border-radius: 50%;
+  outline: none;
 }
 
-.disabled{
-    cursor: not-allowed;
+div.checked {
+  pointer-events: none;
+  background-image: url("../img/check.png");
+  background-size: contain;
+  background-position: center center;
+  background-color: transparent;
+  width: 50px;
+  height: 50px;
+}
+
+.disabled {
+  cursor: not-allowed;
 }

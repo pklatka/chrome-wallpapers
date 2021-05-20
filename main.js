@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, shell, ipcMain } = require('electron')
+const { app, BrowserWindow, shell, ipcMain,Tray,Menu } = require('electron')
 const path = require('path')
 
 const exeName = path.basename(process.execPath)
@@ -13,14 +13,18 @@ app.setLoginItemSettings({
   ]
 })
 
+app.setAppUserModelId('Google Wallpapers')
+app.setName('Google Wallpapers')
+
 function createWindow(show=true) {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         width: 920,
         height: 670,
         show,
-        paintWhenInitiallyHidden: true, // sprawdz na false czy dziala
+        paintWhenInitiallyHidden: false, 
         autoHideMenuBar: true,
+        icon: path.join(__dirname,'./public/img/icon.ico'),
         title: 'Chrome Wallpapers',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
@@ -31,7 +35,7 @@ function createWindow(show=true) {
     mainWindow.loadFile(path.join(__dirname, './public/index.html'))
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
 
     mainWindow.on('close', (evt) => {
         if (!isAppQuitting) {
@@ -39,7 +43,7 @@ function createWindow(show=true) {
             mainWindow.hide()
         }
     });
-    
+ 
     return mainWindow
 }
 
@@ -58,6 +62,17 @@ app.whenReady().then(() => {
     } 
 
     myWindow = createWindow(process.argv.every(el=>!el.includes('--hidden')))
+
+    tray = new Tray(path.join(__dirname,'./public/img/icon.png'))
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Item1', type: 'radio' },
+      { label: 'Item2', type: 'radio' },
+      { label: 'Item3', type: 'radio', checked: true },
+      { label: 'Item4', type: 'radio' }
+    ])
+    tray.setToolTip('This is my application.')
+    tray.setContextMenu(contextMenu)
+  
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the

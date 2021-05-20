@@ -26,14 +26,14 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('input#interval-value').value = schedule.inputValue == 0 ? '' : schedule.inputValue
         document.querySelector('select').selectedIndex = schedule.selectedIndex
         document.querySelector('input#shuffle').checked = schedule.shuffle
-    
+
         const list = await getWallpapersList()
-    
+
         const main = document.querySelector('main')
-    
+
         const section = document.createElement('section')
         section.id = "categories"
-    
+
         for (category of list.categories) {
             let div = document.createElement('div')
             div.className = "block"
@@ -45,7 +45,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             div.appendChild(thumbnail)
             div.innerHTML += category.categoryTitle
             section.appendChild(div)
-    
+
             // Create section for category items
             const wallpapers = document.createElement('section')
             wallpapers.id = category.id
@@ -61,15 +61,15 @@ window.addEventListener('DOMContentLoaded', async () => {
                 thumbnail.dataset.type = "wallpapers"
                 thumbnail.title = photo.title
                 div.appendChild(thumbnail)
-    
+
                 wallpapers.appendChild(div)
             }
-    
+
             main.appendChild(wallpapers)
         }
-    
+
         main.appendChild(section)
-    
+
         document.querySelector('button#back').addEventListener('click', e => {
             document.querySelector('section:not(.hidden)').classList.add('hidden')
             document.querySelector(`section#categories`).classList.remove('hidden')
@@ -79,12 +79,12 @@ window.addEventListener('DOMContentLoaded', async () => {
             el.addEventListener('click', mainRender)
             el.addEventListener('contextmenu', addToSchedule)
         })
-    
+
         document.querySelector('a').addEventListener('click', e => {
             e.preventDefault()
             ipcRenderer.invoke('openExternalBrowser', e.target.href)
         })
-    
+
         document.querySelector('select').addEventListener('change', e => {
             const input = document.querySelector('input#interval-value')
             if (e.target.selectedIndex == 6) {
@@ -96,10 +96,10 @@ window.addEventListener('DOMContentLoaded', async () => {
                 input.classList.remove('disabled')
             }
         })
-    
+
         document.querySelector('button#show').addEventListener('click', e => {
             if (schedule.wallpapers.length <= 0) return;
-    
+
             if (!e.target.classList.contains('hide')) {
                 document.querySelectorAll('div.checked').forEach(el => {
                     temporarySelected.push(el.parentElement)
@@ -126,7 +126,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 e.target.textContent = 'SHOW SELECTED'
             }
         })
-    
+
         document.querySelector('button#save').addEventListener('click', () => {
             const inputValue = Number(document.querySelector('input#interval-value').value)
             const selectedIndex = document.querySelector('select').selectedIndex
@@ -136,30 +136,30 @@ window.addEventListener('DOMContentLoaded', async () => {
             let wallpapers = [...document.querySelectorAll('div.checked')].map(el => {
                 let r;
                 if (el.parentElement.dataset.type === "wallpapers") {
-                    r= { imageUrl: el.parentElement.dataset.imageUrl, active: false, type: 'wallpaper' }
+                    r = { imageUrl: el.parentElement.dataset.imageUrl, active: false, type: 'wallpaper' }
                 } else if (el.parentElement.dataset.type === "categories") {
                     categories.push(el.parentElement.dataset.id)
-                    r= { id: el.parentElement.dataset.id, type: 'category' }
+                    r = { id: el.parentElement.dataset.id, type: 'category' }
                 }
                 el.remove()
                 return r
             })
-    
+
             if (wallpapers.length <= 0) {
                 return notify("No wallpapers selected.", 2)
             }
-    
+
             wallpapers[0].active = true
             const newSchedule = {
-                interval, nextRunDate: new Date(new Date().getTime() + interval),inputValue, selectedIndex, shuffle, categories, wallpapers
+                interval, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
             }
             fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
-            schedule = newSchedule    
+            schedule = newSchedule
 
             temporarySelected = []
             notify("Schedule saved.")
             startInterval()
-            if(document.querySelector('button#show').textContent == "HIDE SELECTED"){
+            if (document.querySelector('button#show').textContent == "HIDE SELECTED") {
                 document.querySelector('button#show').click()
             }
         })
@@ -168,7 +168,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         })
         document.querySelector('button#all').addEventListener('click', () => {
             document.querySelectorAll('div.thumbnail').forEach(el => el.innerHTML = checked)
-        }) 
+        })
     } catch (error) {
         console.error(error)
     }
@@ -226,7 +226,7 @@ const getWallpapersList = async () => {
     try {
         const oldFile = fs.readFileSync(path.join(__dirname, './data/wallpapers.json'))
         let list = JSON.parse(oldFile)
-    
+
         if (new Date() > new Date(list.validUntil)) {
             if (navigator.onLine) {
                 try {
@@ -246,7 +246,7 @@ const getWallpapersList = async () => {
                             })
                         }
                     })
-    
+
                     fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
                     schedule = newSchedule
                 } catch (error) {
@@ -256,11 +256,11 @@ const getWallpapersList = async () => {
                 console.error("User not connected to network! Using previously downloaded wallpaper list.")
             }
         }
-    
+
         return list
     } catch (error) {
         console.error(error)
-    } 
+    }
 }
 
 const notify = (msg, status = 0, timeout = 5000) => {
@@ -309,7 +309,7 @@ const changeWallpaper = async (url) => {
             responseType: 'arraybuffer'
         })
         fs.writeFileSync(path.join(__dirname, './data/wallpaper.jpg'), Buffer.from(res.data, 'binary'))
-        await wallpaper.set(path.join(__dirname,'./data/wallpaper.jpg'))
+        await wallpaper.set(path.join(__dirname, './data/wallpaper.jpg'))
     } catch (error) {
         console.log(error)
     }
@@ -317,25 +317,25 @@ const changeWallpaper = async (url) => {
 
 const getNextWallpaperUrl = () => {
     // Find active wallpaper
-    let activeWallpaperIndex = schedule.wallpapers.findIndex(el=>el.active == true)
-    if(activeWallpaperIndex == -1) return;
+    let activeWallpaperIndex = schedule.wallpapers.findIndex(el => el.active == true)
+    if (activeWallpaperIndex == -1) return;
 
     schedule.wallpapers[activeWallpaperIndex].active = false
 
     const wallpaperLength = schedule.wallpapers.length
 
-    if(schedule.shuffle){
-        do{
+    if (schedule.shuffle) {
+        do {
             activeWallpaperIndex = Math.floor(Math.random() * wallpaperLength)
-        }while(schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper")    
-    }else{
-        do{
-            if(activeWallpaperIndex == wallpaperLength - 1){
+        } while (schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper")
+    } else {
+        do {
+            if (activeWallpaperIndex == wallpaperLength - 1) {
                 activeWallpaperIndex = 0
-            }else{
+            } else {
                 activeWallpaperIndex += 1;
             }
-        }while(schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper")
+        } while (schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper")
     }
     schedule.wallpapers[activeWallpaperIndex].active = true
 
@@ -345,17 +345,17 @@ const getNextWallpaperUrl = () => {
 }
 
 const handleInterval = async () => {
-    if(schedule.interval == 0 || new Date() > new Date(schedule.nextRunDate)){
+    if (schedule.interval == 0 || new Date() > new Date(schedule.nextRunDate)) {
         await changeWallpaper(getNextWallpaperUrl())
     }
 }
 
 const startInterval = async () => {
     clearInterval(interval)
-    
-    if(schedule.interval == 0){
+
+    if (schedule.interval == 0) {
         await handleInterval()
-    }else{
+    } else {
         interval = setInterval(handleInterval, schedule.interval);
     }
 }
