@@ -194,6 +194,13 @@ section {
   padding: 10px;
 }
 
+section.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+}
+
 div.block {
   margin: 15px;
   min-width: 150px;

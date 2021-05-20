@@ -1,17 +1,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, shell, ipcMain,Tray,Menu } = require('electron')
 const path = require('path')
-
 const exeName = path.basename(process.execPath)
-
-app.setLoginItemSettings({
-  openAtLogin: true,
-  path: app.getPath('exe'),
-  args: [
-    '--processStart', `"${exeName}"`,
-    '--process-start-args', `"--hidden"`,
-  ]
-})
 
 app.setAppUserModelId('Google Wallpapers')
 app.setName('Google Wallpapers')
@@ -21,7 +11,7 @@ function createWindow(show=true) {
     const mainWindow = new BrowserWindow({
         width: 920,
         height: 670,
-        show,
+        show: false,
         paintWhenInitiallyHidden: false, 
         autoHideMenuBar: true,
         icon: path.join(__dirname,'./public/img/icon.ico'),
@@ -37,6 +27,10 @@ function createWindow(show=true) {
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()
 
+    mainWindow.webContents.on('did-finish-load', () => {
+        if(show) mainWindow.show();
+    });    
+
     mainWindow.on('close', (evt) => {
         if (!isAppQuitting) {
             evt.preventDefault();
@@ -47,7 +41,7 @@ function createWindow(show=true) {
     return mainWindow
 }
 
-let myWindow = null
+let window = null
 let isAppQuitting = false;
 
 // This method will be called when Electron has finished
@@ -61,19 +55,19 @@ app.whenReady().then(() => {
         return;
     } 
 
-    myWindow = createWindow(process.argv.every(el=>!el.includes('--hidden')))
+    window = createWindow(process.argv.every(el=>!el.includes('--hidden')))
 
     tray = new Tray(path.join(__dirname,'./public/img/icon.png'))
     const contextMenu = Menu.buildFromTemplate([
       { label: 'Next wallpaper', type: 'normal',click: (menuItem, browserWindow, event) => {
-        myWindow.webContents.send('next-wallpaper')
+        window.webContents.send('next-wallpaper')
       } },
       { label: 'Quit', type: 'normal', role:'quit' },
     ])
-    tray.setToolTip('This is my application.')
+    tray.setToolTip('Chrome Wallpapers\nRight click for more')
     tray.setContextMenu(contextMenu)
-    tray.on('click',e=>{
-        tray.popUpContextMenu(contextMenu)
+    tray.on('double-click',e=>{
+        window.show()
     })
   
     app.on('activate', function () {
@@ -89,12 +83,12 @@ app.on('before-quit', (evt) => {
 
 app.on('second-instance', (event, commandLine, workingDirectory) => {
 // Someone tried to run a second instance, we should focus our window.
-    if (myWindow) {
-        if (myWindow.isMinimized()) {
-            myWindow.restore()
+    if (window) {
+        if (window.isMinimized()) {
+            window.restore()
         }
-        myWindow.show()
-        myWindow.focus()
+        window.show()
+        window.focus()
     }
 })
 
@@ -110,4 +104,30 @@ app.on('window-all-closed', function () {
 
 ipcMain.handle('openExternalBrowser', (event, url) => {
     shell.openExternal(url)
+})
+
+ipcMain.handle('runOnLogin',(event,setToRunOnLogin)=>{
+    if(setToRunOnLogin){
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            openAsHidden: true,
+            path: app.getPath('exe'),
+            args: [
+            '--processStart', `"${exeName}"`,
+            '--process-start-args', `"--hidden"`,
+            ],
+            enabled: true,
+        }) 
+    }else{
+        app.setLoginItemSettings({
+            openAtLogin: false,
+            openAsHidden: true,
+            path: app.getPath('exe'),
+            args: [
+            '--processStart', `"${exeName}"`,
+            '--process-start-args', `"--hidden"`,
+            ],
+            enabled: false,
+        }) 
+    }
 })

@@ -2,11 +2,8 @@
 // It has the same sandbox as a Chrome extension.
 
 // TODO
-//  - loader when downloading new wallpaper list
 //  - more notify() function usage
-//  - more try-catch
-//  - more code comments
-//  - add background process for schedule
+//  - fix autorun disable problem?
 
 const fs = require('fs')
 const path = require('path')
@@ -26,8 +23,9 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('input#interval-value').value = schedule.inputValue == 0 ? '' : schedule.inputValue
         document.querySelector('select').selectedIndex = schedule.selectedIndex
         document.querySelector('input#shuffle').checked = schedule.shuffle
+        document.querySelector('input#autostart').checked = schedule.autostart
 
-        const list = await getWallpapersList()
+        const list = await getWallpapersList('onstart')
 
         const main = document.querySelector('main')
 
@@ -127,7 +125,18 @@ window.addEventListener('DOMContentLoaded', async () => {
             }
         })
 
+        document.querySelector('input#autostart').addEventListener('click',(e)=>{
+            ipcRenderer.invoke('runOnLogin',e.target.checked)
+            schedule.autostart = e.target.checked
+            fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(schedule))
+        })
+
         document.querySelector('button#save').addEventListener('click', () => {
+            const autostart = document.querySelector('input#autostart').checked
+            if(!autostart){
+                notify("Autostart must be on to make schedule work!",2)
+                return;
+            }
             const inputValue = Number(document.querySelector('input#interval-value').value)
             const selectedIndex = document.querySelector('select').selectedIndex
             const interval = inputValue * Number(document.querySelector('select').value) * 1000
@@ -151,7 +160,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             wallpapers[0].active = true
             const newSchedule = {
-                interval, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
+                interval, autostart, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
             }
             fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
             schedule = newSchedule
@@ -174,7 +183,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 })
 
-const addToSchedule = async e => {
+const addToSchedule = e => {
     e.preventDefault()
     if (e.target.dataset.type === "categories") {
         if (e.target.innerHTML != '') {
@@ -222,7 +231,7 @@ const mainRender = async e => {
     }
 }
 
-const getWallpapersList = async () => {
+const getWallpapersList = async (mode="default") => {
     try {
         const oldFile = fs.readFileSync(path.join(__dirname, './data/wallpapers.json'))
         let list = JSON.parse(oldFile)
@@ -230,6 +239,13 @@ const getWallpapersList = async () => {
         if (new Date() > new Date(list.validUntil)) {
             if (navigator.onLine) {
                 try {
+                    if(mode == "onstart"){
+                        document.querySelector('main').innerHTML += `<section class="loader">${loader}</section>`
+                    }
+                    document.querySelector('input#interval-value').value = schedule.inputValue == 0 ? '' : schedule.inputValue
+                    document.querySelector('select').selectedIndex = schedule.selectedIndex
+                    document.querySelector('input#shuffle').checked = schedule.shuffle
+                    document.querySelector('input#autostart').checked = schedule.autostart
                     const response = await fetch(settings.wallpapersListSource)
                     const data = await response.json()
                     list = data
@@ -248,13 +264,18 @@ const getWallpapersList = async () => {
                     })
 
                     fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
-                    schedule = newSchedule
+                    schedule = newSchedule            
                 } catch (error) {
                     console.error(error)
                 }
             } else {
                 console.error("User not connected to network! Using previously downloaded wallpaper list.")
             }
+            
+            if(mode == "onstart" && document.querySelector('section.loader')){
+                document.querySelector('section.loader').remove()
+            }
+
         }
 
         return list
