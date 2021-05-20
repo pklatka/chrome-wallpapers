@@ -14,11 +14,12 @@ const wallpaper = require('wallpaper')
 const axios = require('axios')
 const settings = require(path.join(__dirname, './data/settings.json'))
 const { ipcRenderer } = require('electron')
-const temporarySelected = []
-const schedule = require(path.join(__dirname, './data/schedule.json'))
+let temporarySelected = []
+let schedule = require(path.join(__dirname, './data/schedule.json'))
 
 const loader = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
 const checked = '<div class="checked"></div>'
+let interval;
 
 window.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -121,6 +122,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 })
                 temporarySelected.forEach(el => el.innerHTML = checked)
                 e.target.classList.remove('hide')
+                temporarySelected = []
                 e.target.textContent = 'SHOW SELECTED'
             }
         })
@@ -132,12 +134,15 @@ window.addEventListener('DOMContentLoaded', async () => {
             const shuffle = document.querySelector('input#shuffle').checked
             const categories = []
             let wallpapers = [...document.querySelectorAll('div.checked')].map(el => {
+                let r;
                 if (el.parentElement.dataset.type === "wallpapers") {
-                    return { imageUrl: el.parentElement.dataset.imageUrl, active: false, type: 'wallpaper' }
+                    r= { imageUrl: el.parentElement.dataset.imageUrl, active: false, type: 'wallpaper' }
                 } else if (el.parentElement.dataset.type === "categories") {
                     categories.push(el.parentElement.dataset.id)
-                    return { id: el.parentElement.dataset.id, type: 'category' }
+                    r= { id: el.parentElement.dataset.id, type: 'category' }
                 }
+                el.remove()
+                return r
             })
     
             if (wallpapers.length <= 0) {
@@ -145,11 +150,18 @@ window.addEventListener('DOMContentLoaded', async () => {
             }
     
             wallpapers[0].active = true
-            fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify({
-                interval, inputValue, selectedIndex, shuffle, categories, wallpapers
-            }))
-    
+            const newSchedule = {
+                interval, nextRunDate: new Date(new Date().getTime() + interval),inputValue, selectedIndex, shuffle, categories, wallpapers
+            }
+            fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
+            schedule = newSchedule    
+
+            temporarySelected = []
             notify("Schedule saved.")
+            startInterval()
+            if(document.querySelector('button#show').textContent == "HIDE SELECTED"){
+                document.querySelector('button#show').click()
+            }
         })
         document.querySelector('button#clear').addEventListener('click', () => {
             document.querySelectorAll('div.checked').forEach(el => el.remove())
@@ -203,12 +215,6 @@ const mainRender = async e => {
             }
             e.target.innerHTML += loader
             await changeWallpaper(e.target.dataset.imageUrl)
-            // const res = await axios({
-            //     url: e.target.dataset.imageUrl,
-            //     responseType: 'arraybuffer'
-            // })
-            // fs.writeFileSync(path.join(__dirname, './data/wallpaper.jpg'), Buffer.from(res.data, 'binary'))
-            // await wallpaper.set(path.join(__dirname,'./data/wallpaper.jpg'))
             e.target.innerHTML = ''
         }
     } catch (error) {
@@ -242,6 +248,7 @@ const getWallpapersList = async () => {
                     })
     
                     fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
+                    schedule = newSchedule
                 } catch (error) {
                     console.error(error)
                 }
@@ -293,10 +300,7 @@ const notify = (msg, status = 0, timeout = 5000) => {
     setTimeout(() => {
         notificationBlock.classList.remove('active')
     }, timeout)
-    // alert(msg)
 }
-
-
 
 const changeWallpaper = async (url) => {
     try {
@@ -311,8 +315,49 @@ const changeWallpaper = async (url) => {
     }
 }
 
-let i = 0
-setInterval(() => {
-    changeWallpaper(schedule.wallpapers[i].imageUrl)
-    i+=1
-},5000)
+const getNextWallpaperUrl = () => {
+    // Find active wallpaper
+    let activeWallpaperIndex = schedule.wallpapers.findIndex(el=>el.active == true)
+    if(activeWallpaperIndex == -1) return;
+
+    schedule.wallpapers[activeWallpaperIndex].active = false
+
+    const wallpaperLength = schedule.wallpapers.length
+
+    if(schedule.shuffle){
+        do{
+            activeWallpaperIndex = Math.floor(Math.random() * wallpaperLength)
+        }while(schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper")    
+    }else{
+        do{
+            if(activeWallpaperIndex == wallpaperLength - 1){
+                activeWallpaperIndex = 0
+            }else{
+                activeWallpaperIndex += 1;
+            }
+        }while(schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper")
+    }
+    schedule.wallpapers[activeWallpaperIndex].active = true
+
+    fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(schedule))
+
+    return schedule.wallpapers[activeWallpaperIndex].imageUrl
+}
+
+const handleInterval = async () => {
+    if(schedule.interval == 0 || new Date() > new Date(schedule.nextRunDate)){
+        await changeWallpaper(getNextWallpaperUrl())
+    }
+}
+
+const startInterval = async () => {
+    clearInterval(interval)
+    
+    if(schedule.interval == 0){
+        await handleInterval()
+    }else{
+        interval = setInterval(handleInterval, schedule.interval);
+    }
+}
+
+startInterval()
