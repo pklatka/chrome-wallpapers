@@ -1,5 +1,5 @@
-# google-wallpapers
-Google Wallpapers allows to change your desktop wallpaper with photos available in Google Chrome
+# Chrome wallpapers
+Chrome Wallpapers is a desktop app which allows to change your desktop wallpaper with photos available in Google Chrome
 
 ## Goals
 1. Render all categories and photos
