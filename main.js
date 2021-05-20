@@ -65,15 +65,17 @@ app.whenReady().then(() => {
 
     tray = new Tray(path.join(__dirname,'./public/img/icon.png'))
     const contextMenu = Menu.buildFromTemplate([
-      { label: 'Item1', type: 'radio' },
-      { label: 'Item2', type: 'radio' },
-      { label: 'Item3', type: 'radio', checked: true },
-      { label: 'Item4', type: 'radio' }
+      { label: 'Next wallpaper', type: 'normal',click: (menuItem, browserWindow, event) => {
+        myWindow.webContents.send('next-wallpaper')
+      } },
+      { label: 'Quit', type: 'normal', role:'quit' },
     ])
     tray.setToolTip('This is my application.')
     tray.setContextMenu(contextMenu)
+    tray.on('click',e=>{
+        tray.popUpContextMenu(contextMenu)
+    })
   
-
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.

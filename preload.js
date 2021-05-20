@@ -361,3 +361,7 @@ const startInterval = async () => {
 }
 
 startInterval()
+
+ipcRenderer.on('next-wallpaper',async (event)=>{
+    await handleInterval()
+})
