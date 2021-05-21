@@ -1,9 +1,6 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 
-// TODO
-//  - more notify() function usage
-
 const fs = require('fs')
 const path = require('path')
 const wallpaper = require('wallpaper')
@@ -110,7 +107,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                     if (el.type === 'wallpaper') {
                         document.querySelector(`div[data-image-url="${el.imageUrl}"]`).innerHTML = checked
                     } else {
-                        console.log(document.querySelector(`div[data-type="wallpapers"][data-id="${el.id}"]`))
                         document.querySelector(`div[data-type="categories"][data-id="${el.id}"]`).innerHTML = checked
                     }
                 })
@@ -191,6 +187,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(schedule))
         })
     } catch (error) {
+        notify('Something went wrong!',3)
         console.error(error)
     }
 })
@@ -239,6 +236,7 @@ const mainRender = async e => {
             e.target.innerHTML = ''
         }
     } catch (error) {
+        notify('Something went wrong!',3)
         console.error(error)
     }
 }
@@ -278,9 +276,11 @@ const getWallpapersList = async (mode = "default") => {
                     fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
                     schedule = newSchedule
                 } catch (error) {
+                    notify('Something went wrong!',3)
                     console.error(error)
                 }
             } else {
+                notify('User not connected to network!',3)
                 console.error("User not connected to network! Using previously downloaded wallpaper list.")
             }
 
@@ -292,6 +292,7 @@ const getWallpapersList = async (mode = "default") => {
 
         return list
     } catch (error) {
+        notify('Something went wrong!',3)
         console.error(error)
     }
 }
@@ -344,7 +345,8 @@ const changeWallpaper = async (url) => {
         fs.writeFileSync(path.join(__dirname, './data/wallpaper.jpg'), Buffer.from(res.data, 'binary'))
         await wallpaper.set(path.join(__dirname, './data/wallpaper.jpg'))
     } catch (error) {
-        console.log(error)
+        notify('Something went wrong!',3)
+        console.error(error)
     }
 }
 
