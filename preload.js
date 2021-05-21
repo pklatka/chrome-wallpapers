@@ -3,7 +3,6 @@
 
 // TODO
 //  - more notify() function usage
-//  - fix autorun disable problem?
 
 const fs = require('fs')
 const path = require('path')
@@ -24,6 +23,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('select').selectedIndex = schedule.selectedIndex
         document.querySelector('input#shuffle').checked = schedule.shuffle
         document.querySelector('input#autostart').checked = schedule.autostart
+        document.querySelector('button#startstop').textContent = schedule.enabled == true ? 'STOP INTERVAL' : 'START INTERVAL'
 
         const list = await getWallpapersList('onstart')
 
@@ -160,11 +160,11 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             wallpapers[0].active = true
             const newSchedule = {
-                interval, autostart, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
+                enabled: true,interval, autostart, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
             }
             fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
             schedule = newSchedule
-
+            document.querySelector('button#startstop').textContent = 'STOP INTERVAL'
             temporarySelected = []
             notify("Schedule saved.")
             startInterval()
@@ -175,9 +175,20 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('button#clear').addEventListener('click', () => {
             document.querySelectorAll('div.checked').forEach(el => el.remove())
         })
-        document.querySelector('button#startstop').addEventListener('click', () => {
-
-            document.querySelectorAll('div.thumbnail').forEach(el => el.innerHTML = checked)
+        document.querySelector('button#startstop').addEventListener('click',async e => {
+            if(e.target.textContent == 'STOP INTERVAL'){
+                clearInterval(interval)
+                schedule.enabled=false
+                e.target.textContent = 'START INTERVAL'
+                notify('Interval has been stopped!',1)
+            }else{
+                // Start schedule
+                schedule.enabled=true
+                e.target.textContent = 'STOP INTERVAL'
+                await startInterval()
+                notify('Interval has been enabled!',1)
+            }
+            fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(schedule))
         })
     } catch (error) {
         console.error(error)
@@ -367,13 +378,15 @@ const getNextWallpaperUrl = () => {
 }
 
 const handleInterval = async (type) => {
-    if (type == 'on-demand' || schedule.interval == 0 || new Date() >= new Date(schedule.nextRunDate - 1000)) {
+    if (type == 'on-demand' || schedule.interval == 0 || new Date().getTime() >= new Date(schedule.nextRunDate).getTime()-1000) {
         await changeWallpaper(getNextWallpaperUrl())
     }
 }
 
 const startInterval = async () => {
     clearInterval(interval)
+
+    if(!schedule.enabled) return;
 
     if (schedule.interval == 0) {
         await handleInterval()
