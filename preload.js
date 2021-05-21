@@ -125,16 +125,16 @@ window.addEventListener('DOMContentLoaded', async () => {
             }
         })
 
-        document.querySelector('input#autostart').addEventListener('click',(e)=>{
-            ipcRenderer.invoke('runOnLogin',e.target.checked)
+        document.querySelector('input#autostart').addEventListener('click', (e) => {
+            ipcRenderer.invoke('runOnLogin', e.target.checked)
             schedule.autostart = e.target.checked
             fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(schedule))
         })
 
         document.querySelector('button#save').addEventListener('click', () => {
             const autostart = document.querySelector('input#autostart').checked
-            if(!autostart){
-                notify("Autostart must be on to make schedule work!",2)
+            if (!autostart) {
+                notify("Autostart must be on to make schedule work!", 2)
                 return;
             }
             const inputValue = Number(document.querySelector('input#interval-value').value)
@@ -175,7 +175,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('button#clear').addEventListener('click', () => {
             document.querySelectorAll('div.checked').forEach(el => el.remove())
         })
-        document.querySelector('button#all').addEventListener('click', () => {
+        document.querySelector('button#startstop').addEventListener('click', () => {
+
             document.querySelectorAll('div.thumbnail').forEach(el => el.innerHTML = checked)
         })
     } catch (error) {
@@ -231,7 +232,7 @@ const mainRender = async e => {
     }
 }
 
-const getWallpapersList = async (mode="default") => {
+const getWallpapersList = async (mode = "default") => {
     try {
         const oldFile = fs.readFileSync(path.join(__dirname, './data/wallpapers.json'))
         let list = JSON.parse(oldFile)
@@ -239,7 +240,7 @@ const getWallpapersList = async (mode="default") => {
         if (new Date() > new Date(list.validUntil)) {
             if (navigator.onLine) {
                 try {
-                    if(mode == "onstart"){
+                    if (mode == "onstart") {
                         document.querySelector('main').innerHTML += `<section class="loader">${loader}</section>`
                     }
                     document.querySelector('input#interval-value').value = schedule.inputValue == 0 ? '' : schedule.inputValue
@@ -264,15 +265,15 @@ const getWallpapersList = async (mode="default") => {
                     })
 
                     fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
-                    schedule = newSchedule            
+                    schedule = newSchedule
                 } catch (error) {
                     console.error(error)
                 }
             } else {
                 console.error("User not connected to network! Using previously downloaded wallpaper list.")
             }
-            
-            if(mode == "onstart" && document.querySelector('section.loader')){
+
+            if (mode == "onstart" && document.querySelector('section.loader')) {
                 document.querySelector('section.loader').remove()
             }
 
@@ -359,14 +360,14 @@ const getNextWallpaperUrl = () => {
         } while (schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper")
     }
     schedule.wallpapers[activeWallpaperIndex].active = true
-
+    schedule.nextRunDate = new Date(new Date().getTime() + schedule.interval)
     fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(schedule))
 
     return schedule.wallpapers[activeWallpaperIndex].imageUrl
 }
 
-const handleInterval = async () => {
-    if (schedule.interval == 0 || new Date() > new Date(schedule.nextRunDate)) {
+const handleInterval = async (type) => {
+    if (type == 'on-demand' || schedule.interval == 0 || new Date() >= new Date(schedule.nextRunDate - 1000)) {
         await changeWallpaper(getNextWallpaperUrl())
     }
 }
@@ -383,6 +384,6 @@ const startInterval = async () => {
 
 startInterval()
 
-ipcRenderer.on('next-wallpaper',async (event)=>{
-    await handleInterval()
+ipcRenderer.on('next-wallpaper', async (event) => {
+    await handleInterval('on-demand')
 })
