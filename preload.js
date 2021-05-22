@@ -129,8 +129,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('input#autostart').addEventListener('click', (e) => {
             ipcRenderer.invoke('runOnLogin', e.target.checked)
             schedule.autostart = e.target.checked
-            storage.set('schedule',schedule,(err)=>{
-                if(err){
+            storage.set('schedule', schedule, (err) => {
+                if (err) {
                     console.error(err)
                 }
             })
@@ -142,12 +142,12 @@ window.addEventListener('DOMContentLoaded', async () => {
                 notify("Autostart must be on to make schedule work!", 2)
                 return;
             }
+            const selectedIndex = document.querySelector('select').selectedIndex
             const inputValue = Number(document.querySelector('input#interval-value').value)
-            if(inputValue<1){
-                notify("Time value must be greater than zero!",2)
+            if (inputValue < 1 && selectedIndex != 6) {
+                notify("Time value must be greater than zero!", 2)
                 return;
             }
-            const selectedIndex = document.querySelector('select').selectedIndex
             const interval = inputValue * Number(document.querySelector('select').value) * 1000
             const shuffle = document.querySelector('input#shuffle').checked
             const categories = []
@@ -169,10 +169,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             wallpapers[0].active = true
             const newSchedule = {
-                enabled: true,interval, autostart, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
+                enabled: true, interval, autostart, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
             }
-            storage.set('schedule',newSchedule,(err)=>{
-                if(err){
+            storage.set('schedule', newSchedule, (err) => {
+                if (err) {
                     console.error(err)
                 }
             })
@@ -188,27 +188,27 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('button#clear').addEventListener('click', () => {
             document.querySelectorAll('div.checked').forEach(el => el.remove())
         })
-        document.querySelector('button#startstop').addEventListener('click',async e => {
-            if(e.target.textContent == 'STOP INTERVAL'){
+        document.querySelector('button#startstop').addEventListener('click', async e => {
+            if (e.target.textContent == 'STOP INTERVAL') {
                 clearInterval(interval)
-                schedule.enabled=false
+                schedule.enabled = false
                 e.target.textContent = 'START INTERVAL'
-                notify('Interval has been stopped!',1)
-            }else{
+                notify('Interval has been stopped!', 1)
+            } else {
                 // Start schedule
-                schedule.enabled=true
+                schedule.enabled = true
                 e.target.textContent = 'STOP INTERVAL'
                 await startInterval()
-                notify('Interval has been enabled!',1)
+                notify('Interval has been enabled!', 1)
             }
-            storage.set('schedule',schedule,(err)=>{
-                if(err){
+            storage.set('schedule', schedule, (err) => {
+                if (err) {
                     console.error(err)
                 }
             })
         })
     } catch (error) {
-        notify('Something went wrong!',3)
+        notify('Something went wrong!', 3)
         console.error(error)
     }
 })
@@ -257,7 +257,7 @@ const mainRender = async e => {
             e.target.innerHTML = ''
         }
     } catch (error) {
-        notify('Something went wrong!',3)
+        notify('Something went wrong!', 3)
         console.error(error)
     }
 }
@@ -278,14 +278,14 @@ const getWallpapersList = async (mode = "default") => {
                     const response = await fetch(settings.wallpapersListSource)
                     const data = await response.json()
                     list = data
-                    storage.set('wallpapers',data,(err)=>{
-                        if(err){
+                    storage.set('wallpapers', data, (err) => {
+                        if (err) {
                             console.error(err)
                         }
                     })
 
                     // Autoupdate category photos in schedule
-                    if(Object.keys(schedule).length !== 0){
+                    if (Object.keys(schedule).length !== 0) {
                         const newSchedule = { ...schedule }
                         schedule.categories.forEach(category => {
                             const wallpaperList = list.categories.find(el => el.id == category)
@@ -297,19 +297,19 @@ const getWallpapersList = async (mode = "default") => {
                                 })
                             }
                         })
-                        storage.set('schedule',newSchedule,(err)=>{
-                            if(err){
+                        storage.set('schedule', newSchedule, (err) => {
+                            if (err) {
                                 console.error(err)
                             }
                         })
                         schedule = newSchedule
                     }
                 } catch (error) {
-                    notify('Something went wrong!',3)
+                    notify('Something went wrong!', 3)
                     console.error(error)
                 }
             } else {
-                notify('User not connected to network!',3)
+                notify('User not connected to network!', 3)
                 console.error("User not connected to network! Using previously downloaded wallpaper list.")
             }
 
@@ -321,7 +321,7 @@ const getWallpapersList = async (mode = "default") => {
 
         return list
     } catch (error) {
-        notify('Something went wrong!',3)
+        notify('Something went wrong!', 3)
         console.error(error)
     }
 }
@@ -374,7 +374,7 @@ const changeWallpaper = async (url) => {
         fs.writeFileSync(path.join(storage.getDefaultDataPath(), './wallpaper.jpg'), Buffer.from(res.data, 'binary'))
         await wallpaper.set(path.join(storage.getDefaultDataPath(), './wallpaper.jpg'))
     } catch (error) {
-        notify('Something went wrong!',3)
+        notify('Something went wrong!', 3)
         console.error(error)
     }
 }
@@ -403,8 +403,8 @@ const getNextWallpaperUrl = () => {
     }
     schedule.wallpapers[activeWallpaperIndex].active = true
     schedule.nextRunDate = new Date(new Date().getTime() + schedule.interval)
-    storage.set('schedule',schedule,(err)=>{
-        if(err){
+    storage.set('schedule', schedule, (err) => {
+        if (err) {
             console.error(err)
         }
     })
@@ -413,7 +413,7 @@ const getNextWallpaperUrl = () => {
 }
 
 const handleInterval = async (type) => {
-    if (type == 'on-demand' || schedule.interval == 0 || new Date().getTime() >= new Date(schedule.nextRunDate).getTime()-1000) {
+    if (type == 'on-demand' || schedule.interval == 0 || new Date().getTime() >= new Date(schedule.nextRunDate).getTime() - 1000) {
         await changeWallpaper(getNextWallpaperUrl())
     }
 }
@@ -421,7 +421,7 @@ const handleInterval = async (type) => {
 const startInterval = async () => {
     clearInterval(interval)
 
-    if(!schedule.enabled) return;
+    if (!schedule.enabled) return;
 
     if (schedule.interval == 0) {
         await handleInterval()
