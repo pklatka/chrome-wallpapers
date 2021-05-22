@@ -143,6 +143,10 @@ window.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
             const inputValue = Number(document.querySelector('input#interval-value').value)
+            if(inputValue<1){
+                notify("Time value must be greater than zero!",2)
+                return;
+            }
             const selectedIndex = document.querySelector('select').selectedIndex
             const interval = inputValue * Number(document.querySelector('select').value) * 1000
             const shuffle = document.querySelector('input#shuffle').checked
