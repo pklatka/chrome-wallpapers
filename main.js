@@ -17,7 +17,8 @@ function createWindow(show=true) {
         icon: path.join(__dirname,'./public/img/icon.ico'),
         title: 'Chrome Wallpapers',
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'preload.js'),
+            enableRemoteModule: true
         }
     })
 
@@ -107,28 +108,27 @@ ipcMain.handle('openExternalBrowser', (event, url) => {
 })
 
 ipcMain.handle('runOnLogin',(event,setToRunOnLogin)=>{
-    // UNCOMMENT ON BUILD
-    // if(setToRunOnLogin){
-    //     app.setLoginItemSettings({
-    //         openAtLogin: true,
-    //         openAsHidden: true,
-    //         path: app.getPath('exe'),
-    //         args: [
-    //         '--processStart', `"${exeName}"`,
-    //         '--process-start-args', `"--hidden"`,
-    //         ],
-    //         enabled: true,
-    //     }) 
-    // }else{
-    //     app.setLoginItemSettings({
-    //         openAtLogin: false,
-    //         openAsHidden: true,
-    //         path: app.getPath('exe'),
-    //         args: [
-    //         '--processStart', `"${exeName}"`,
-    //         '--process-start-args', `"--hidden"`,
-    //         ],
-    //         enabled: false,
-    //     }) 
-    // }
+    if(setToRunOnLogin){
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            openAsHidden: true,
+            path: app.getPath('exe'),
+            args: [
+            '--processStart', `"${exeName}"`,
+            '--process-start-args', `"--hidden"`,
+            ],
+            enabled: true,
+        }) 
+    }else{
+        app.setLoginItemSettings({
+            openAtLogin: false,
+            openAsHidden: true,
+            path: app.getPath('exe'),
+            args: [
+            '--processStart', `"${exeName}"`,
+            '--process-start-args', `"--hidden"`,
+            ],
+            enabled: false,
+        }) 
+    }
 })

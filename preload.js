@@ -1,14 +1,19 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 
+// Move data files to  C:\Users"YourUser"\AppData\Local\myApp to fix the issue
+// Uninstall options to remove this files
+// Choose path to install option?
+
 const fs = require('fs')
 const path = require('path')
 const wallpaper = require('wallpaper')
 const axios = require('axios')
+const storage = require('electron-json-storage')
 const settings = require(path.join(__dirname, './data/settings.json'))
 const { ipcRenderer } = require('electron')
 let temporarySelected = []
-let schedule = require(path.join(__dirname, './data/schedule.json'))
+let schedule = storage.getSync('schedule')
 
 const loader = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
 const checked = '<div class="checked"></div>'
@@ -124,7 +129,11 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('input#autostart').addEventListener('click', (e) => {
             ipcRenderer.invoke('runOnLogin', e.target.checked)
             schedule.autostart = e.target.checked
-            fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(schedule))
+            storage.set('schedule',schedule,(err)=>{
+                if(err){
+                    console.error(err)
+                }
+            })
         })
 
         document.querySelector('button#save').addEventListener('click', () => {
@@ -158,7 +167,11 @@ window.addEventListener('DOMContentLoaded', async () => {
             const newSchedule = {
                 enabled: true,interval, autostart, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
             }
-            fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
+            storage.set('schedule',newSchedule,(err)=>{
+                if(err){
+                    console.error(err)
+                }
+            })
             schedule = newSchedule
             document.querySelector('button#startstop').textContent = 'STOP INTERVAL'
             temporarySelected = []
@@ -184,7 +197,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                 await startInterval()
                 notify('Interval has been enabled!',1)
             }
-            fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(schedule))
+            storage.set('schedule',schedule,(err)=>{
+                if(err){
+                    console.error(err)
+                }
+            })
         })
     } catch (error) {
         notify('Something went wrong!',3)
@@ -243,10 +260,8 @@ const mainRender = async e => {
 
 const getWallpapersList = async (mode = "default") => {
     try {
-        const oldFile = fs.readFileSync(path.join(__dirname, './data/wallpapers.json'))
-        let list = JSON.parse(oldFile)
-
-        if (new Date() > new Date(list.validUntil)) {
+        let list = storage.getSync('wallpapers')
+        if (Object.keys(list).length === 0 || new Date() > new Date(list.validUntil)) {
             if (navigator.onLine) {
                 try {
                     if (mode == "onstart") {
@@ -259,22 +274,32 @@ const getWallpapersList = async (mode = "default") => {
                     const response = await fetch(settings.wallpapersListSource)
                     const data = await response.json()
                     list = data
-                    fs.writeFileSync(path.join(__dirname, './data/wallpapers.json'), JSON.stringify(data))
-                    // Autoupdate category photos in schedule
-                    const newSchedule = { ...schedule }
-                    schedule.categories.forEach(category => {
-                        const wallpaperList = list.categories.find(el => el.id == category)
-                        if (wallpaperList) {
-                            wallpaperList.wallpapers.forEach(wallpaper => {
-                                if (!schedule.wallpapers.find(el => el.imageUrl == wallpaper.imageUrl)) {
-                                    newSchedule.wallpapers.push({ imageUrl: wallpaper.imageUrl, active: false, type: 'wallpaper' })
-                                }
-                            })
+                    storage.set('wallpapers',data,(err)=>{
+                        if(err){
+                            console.error(err)
                         }
                     })
 
-                    fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(newSchedule))
-                    schedule = newSchedule
+                    // Autoupdate category photos in schedule
+                    if(Object.keys(schedule).length !== 0){
+                        const newSchedule = { ...schedule }
+                        schedule.categories.forEach(category => {
+                            const wallpaperList = list.categories.find(el => el.id == category)
+                            if (wallpaperList) {
+                                wallpaperList.wallpapers.forEach(wallpaper => {
+                                    if (!schedule.wallpapers.find(el => el.imageUrl == wallpaper.imageUrl)) {
+                                        newSchedule.wallpapers.push({ imageUrl: wallpaper.imageUrl, active: false, type: 'wallpaper' })
+                                    }
+                                })
+                            }
+                        })
+                        storage.set('schedule',newSchedule,(err)=>{
+                            if(err){
+                                console.error(err)
+                            }
+                        })
+                        schedule = newSchedule
+                    }
                 } catch (error) {
                     notify('Something went wrong!',3)
                     console.error(error)
@@ -342,8 +367,8 @@ const changeWallpaper = async (url) => {
             url,
             responseType: 'arraybuffer'
         })
-        fs.writeFileSync(path.join(__dirname, './data/wallpaper.jpg'), Buffer.from(res.data, 'binary'))
-        await wallpaper.set(path.join(__dirname, './data/wallpaper.jpg'))
+        fs.writeFileSync(path.join(storage.getDefaultDataPath(), './wallpaper.jpg'), Buffer.from(res.data, 'binary'))
+        await wallpaper.set(path.join(storage.getDefaultDataPath(), './wallpaper.jpg'))
     } catch (error) {
         notify('Something went wrong!',3)
         console.error(error)
@@ -374,7 +399,11 @@ const getNextWallpaperUrl = () => {
     }
     schedule.wallpapers[activeWallpaperIndex].active = true
     schedule.nextRunDate = new Date(new Date().getTime() + schedule.interval)
-    fs.writeFileSync(path.join(__dirname, './data/schedule.json'), JSON.stringify(schedule))
+    storage.set('schedule',schedule,(err)=>{
+        if(err){
+            console.error(err)
+        }
+    })
 
     return schedule.wallpapers[activeWallpaperIndex].imageUrl
 }
