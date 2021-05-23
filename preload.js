@@ -273,32 +273,35 @@ const getWallpapersList = async (mode = "default") => {
                     document.querySelector('input#autostart').checked = schedule.autostart
                     const response = await fetch(settings.wallpapersListSource)
                     const data = await response.json()
-                    list = data
-                    storage.set('wallpapers', data, (err) => {
-                        if (err) {
-                            console.error(err)
-                        }
-                    })
-
-                    // Autoupdate category photos in schedule
-                    if (Object.keys(schedule).length !== 0) {
-                        const newSchedule = { ...schedule }
-                        schedule.categories.forEach(category => {
-                            const wallpaperList = list.categories.find(el => el.id == category)
-                            if (wallpaperList) {
-                                wallpaperList.wallpapers.forEach(wallpaper => {
-                                    if (!schedule.wallpapers.find(el => el.imageUrl == wallpaper.imageUrl)) {
-                                        newSchedule.wallpapers.push({ imageUrl: wallpaper.imageUrl, active: false, type: 'wallpaper' })
-                                    }
-                                })
-                            }
-                        })
-                        storage.set('schedule', newSchedule, (err) => {
+                    
+                    if(data.validUntil !== list.validUntil){
+                        list = data
+                        storage.set('wallpapers', data, (err) => {
                             if (err) {
                                 console.error(err)
                             }
                         })
-                        schedule = newSchedule
+    
+                        // Autoupdate category photos in schedule
+                        if (Object.keys(schedule).length !== 0) {
+                            const newSchedule = { ...schedule }
+                            schedule.categories.forEach(category => {
+                                const wallpaperList = list.categories.find(el => el.id == category)
+                                if (wallpaperList) {
+                                    wallpaperList.wallpapers.forEach(wallpaper => {
+                                        if (!schedule.wallpapers.find(el => el.imageUrl == wallpaper.imageUrl)) {
+                                            newSchedule.wallpapers.push({ imageUrl: wallpaper.imageUrl, active: false, type: 'wallpaper' })
+                                        }
+                                    })
+                                }
+                            })
+                            storage.set('schedule', newSchedule, (err) => {
+                                if (err) {
+                                    console.error(err)
+                                }
+                            })
+                            schedule = newSchedule
+                        }
                     }
                 } catch (error) {
                     notify('Something went wrong!', 3)
