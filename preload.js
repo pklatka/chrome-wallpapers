@@ -1,10 +1,6 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 
-// Move data files to  C:\Users"YourUser"\AppData\Local\myApp to fix the issue
-// Uninstall options to remove this files
-// Choose path to install option?
-
 const fs = require('fs')
 const path = require('path')
 const wallpaper = require('wallpaper')
@@ -424,8 +420,9 @@ const startInterval = async () => {
     if (!schedule.enabled) return;
 
     if (schedule.interval == 0) {
-        await handleInterval()
+        await handleInterval('on-demand')
     } else {
+        await handleInterval('on-demand')
         interval = setInterval(handleInterval, schedule.interval);
     }
 }
