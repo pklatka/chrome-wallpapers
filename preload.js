@@ -426,6 +426,9 @@ const getNextWallpaperUrl = () => {
 const handleInterval = async (type) => {
     if (type == 'on-demand' || schedule.interval == 0 || new Date().getTime() >= new Date(schedule.nextRunDate).getTime() - 1000) {
         await changeWallpaper(getNextWallpaperUrl())
+        return true
+    }else{
+        return false
     }
 }
 
@@ -434,12 +437,16 @@ const startInterval = async () => {
 
     if (!schedule.enabled) return;
 
+    let executed;
+
     if (schedule.interval == 0) {
-        await handleInterval('on-demand')
+        executed = await handleInterval('on-demand')
     } else {
-        await handleInterval('on-demand')
+        executed = await handleInterval('on-demand')
         interval = setInterval(handleInterval, schedule.interval);
     }
+
+    return executed
 }
 
 ipcRenderer.on('next-wallpaper', async (event) => {
@@ -447,9 +454,9 @@ ipcRenderer.on('next-wallpaper', async (event) => {
 })
 
 const startup = async () => {
-    await startInterval()
+    const executed = await startInterval()
 
-    if(schedule.autoclose){
+    if(executed && schedule.autoclose){
         ipcRenderer.invoke('closeApp')
     }
 }
