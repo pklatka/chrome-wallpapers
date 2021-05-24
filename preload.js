@@ -21,6 +21,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.querySelector('select').selectedIndex = schedule.selectedIndex
         document.querySelector('input#shuffle').checked = schedule.shuffle
         document.querySelector('input#autostart').checked = schedule.autostart
+        document.querySelector('input#close').checked = schedule.autoclose
         document.querySelector('button#startstop').textContent = schedule.enabled == true ? 'STOP INTERVAL' : 'START INTERVAL'
 
         const list = await getWallpapersList('onstart')
@@ -132,6 +133,15 @@ window.addEventListener('DOMContentLoaded', async () => {
             })
         })
 
+        document.querySelector('input#close').addEventListener('click', (e) => {
+            schedule.autoclose = e.target.checked
+            storage.set('schedule', schedule, (err) => {
+                if (err) {
+                    console.error(err)
+                }
+            })
+        })
+
         document.querySelector('button#save').addEventListener('click', () => {
             const autostart = document.querySelector('input#autostart').checked
             if (!autostart) {
@@ -145,6 +155,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
             const interval = inputValue * Number(document.querySelector('select').value) * 1000
+            const autoclose = document.querySelector('input#close').checked
             const shuffle = document.querySelector('input#shuffle').checked
             const categories = []
             let wallpapers = [...document.querySelectorAll('div.checked')].map(el => {
@@ -165,7 +176,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             wallpapers[0].active = true
             const newSchedule = {
-                enabled: true, interval, autostart, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
+                enabled: true, interval, autostart,autoclose, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
             }
             storage.set('schedule', newSchedule, (err) => {
                 if (err) {
@@ -271,6 +282,7 @@ const getWallpapersList = async (mode = "default") => {
                     document.querySelector('select').selectedIndex = schedule.selectedIndex
                     document.querySelector('input#shuffle').checked = schedule.shuffle
                     document.querySelector('input#autostart').checked = schedule.autostart
+                    document.querySelector('input#close').checked = schedule.autoclose
                     const response = await fetch(settings.wallpapersListSource)
                     const data = await response.json()
                     
@@ -430,8 +442,16 @@ const startInterval = async () => {
     }
 }
 
-startInterval()
-
 ipcRenderer.on('next-wallpaper', async (event) => {
     await handleInterval('on-demand')
 })
+
+const startup = async () => {
+    await startInterval()
+
+    if(schedule.autoclose){
+        ipcRenderer.invoke('closeApp')
+    }
+}
+
+startup()

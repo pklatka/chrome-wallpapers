@@ -44,7 +44,7 @@ function createWindow(show = true) {
 
 let window = null
 let isAppQuitting = false;
-
+let isRunningHidden = false;
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -56,7 +56,9 @@ app.whenReady().then(() => {
         return;
     }
 
-    window = createWindow(process.argv.every(el => !el.includes('--hidden')))
+    isRunningHidden = !process.argv.every(el => !el.includes('--hidden'))
+
+    window = createWindow(!isRunningHidden)
 
     tray = new Tray(path.join(__dirname, './public/img/icon.png'))
     const contextMenu = Menu.buildFromTemplate([
@@ -110,6 +112,12 @@ app.on('window-all-closed', function () {
 
 ipcMain.handle('openExternalBrowser', (event, url) => {
     shell.openExternal(url)
+})
+
+ipcMain.handle('closeApp', (event) => {
+    if(isRunningHidden){
+        app.quit()
+    }
 })
 
 ipcMain.handle('runOnLogin', (event, setToRunOnLogin) => {
