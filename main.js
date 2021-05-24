@@ -1,20 +1,20 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, shell, ipcMain,Tray,Menu } = require('electron')
+const { app, BrowserWindow, shell, ipcMain, Tray, Menu } = require('electron')
 const path = require('path')
 const exeName = path.basename(process.execPath)
 
 app.setAppUserModelId('Google Wallpapers')
 app.setName('Google Wallpapers')
 
-function createWindow(show=true) {
+function createWindow(show = true) {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         width: 920,
         height: 670,
         show: false,
-        paintWhenInitiallyHidden: false, 
+        paintWhenInitiallyHidden: false,
         autoHideMenuBar: true,
-        icon: path.join(__dirname,'./public/img/icon.ico'),
+        icon: path.join(__dirname, './public/img/icon.ico'),
         title: 'Chrome Wallpapers',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
@@ -29,8 +29,8 @@ function createWindow(show=true) {
     // mainWindow.webContents.openDevTools()
 
     mainWindow.webContents.on('did-finish-load', () => {
-        if(show) mainWindow.show();
-    });    
+        if (show) mainWindow.show();
+    });
 
     mainWindow.on('close', (evt) => {
         if (!isAppQuitting) {
@@ -38,7 +38,7 @@ function createWindow(show=true) {
             mainWindow.hide()
         }
     });
- 
+
     return mainWindow
 }
 
@@ -54,23 +54,25 @@ app.whenReady().then(() => {
     if (!gotTheLock) {
         app.quit()
         return;
-    } 
+    }
 
-    window = createWindow(process.argv.every(el=>!el.includes('--hidden')))
+    window = createWindow(process.argv.every(el => !el.includes('--hidden')))
 
-    tray = new Tray(path.join(__dirname,'./public/img/icon.png'))
+    tray = new Tray(path.join(__dirname, './public/img/icon.png'))
     const contextMenu = Menu.buildFromTemplate([
-      { label: 'Next wallpaper', type: 'normal',click: (menuItem, browserWindow, event) => {
-        window.webContents.send('next-wallpaper')
-      } },
-      { label: 'Quit', type: 'normal', role:'quit' },
+        {
+            label: 'Next wallpaper', type: 'normal', click: (menuItem, browserWindow, event) => {
+                window.webContents.send('next-wallpaper')
+            }
+        },
+        { label: 'Quit', type: 'normal', role: 'quit' },
     ])
     tray.setToolTip('Chrome Wallpapers\nClick for more options')
     tray.setContextMenu(contextMenu)
-    tray.on('click',() => {
+    tray.on('click', () => {
         tray.popUpContextMenu();
     })
-    tray.on('double-click',e=>{
+    tray.on('double-click', e => {
         tray.closeContextMenu()
         window.show()
     })
@@ -86,7 +88,7 @@ app.on('before-quit', (evt) => {
 });
 
 app.on('second-instance', (event, commandLine, workingDirectory) => {
-// Someone tried to run a second instance, we should focus our window.
+    // Someone tried to run a second instance, we should focus our window.
     if (window) {
         if (window.isMinimized()) {
             window.restore()
@@ -110,28 +112,28 @@ ipcMain.handle('openExternalBrowser', (event, url) => {
     shell.openExternal(url)
 })
 
-ipcMain.handle('runOnLogin',(event,setToRunOnLogin)=>{
-    // if(setToRunOnLogin){
-    //     app.setLoginItemSettings({
-    //         openAtLogin: true,
-    //         openAsHidden: true,
-    //         path: app.getPath('exe'),
-    //         args: [
-    //         '--processStart', `"${exeName}"`,
-    //         '--process-start-args', `"--hidden"`,
-    //         ],
-    //         enabled: true,
-    //     }) 
-    // }else{
-    //     app.setLoginItemSettings({
-    //         openAtLogin: false,
-    //         openAsHidden: true,
-    //         path: app.getPath('exe'),
-    //         args: [
-    //         '--processStart', `"${exeName}"`,
-    //         '--process-start-args', `"--hidden"`,
-    //         ],
-    //         enabled: false,
-    //     }) 
-    // }
+ipcMain.handle('runOnLogin', (event, setToRunOnLogin) => {
+    if (setToRunOnLogin) {
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            openAsHidden: true,
+            path: app.getPath('exe'),
+            args: [
+                '--processStart', `"${exeName}"`,
+                '--process-start-args', `"--hidden"`,
+            ],
+            enabled: true,
+        })
+    } else {
+        app.setLoginItemSettings({
+            openAtLogin: false,
+            openAsHidden: true,
+            path: app.getPath('exe'),
+            args: [
+                '--processStart', `"${exeName}"`,
+                '--process-start-args', `"--hidden"`,
+            ],
+            enabled: false,
+        })
+    }
 })
