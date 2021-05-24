@@ -65,12 +65,14 @@ app.whenReady().then(() => {
       } },
       { label: 'Quit', type: 'normal', role:'quit' },
     ])
-    tray.setToolTip('Chrome Wallpapers\nRight click for more')
+    tray.setToolTip('Chrome Wallpapers\Click for more options')
     tray.setContextMenu(contextMenu)
+    tray.on('click',() => {
+        tray.popUpContextMenu();
+    })
     tray.on('double-click',e=>{
         window.show()
     })
-  
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
