@@ -432,7 +432,7 @@ const handleInterval = async (type) => {
         result = false
     }
 
-    if(schedule.autoclose && new Date(schedule.nextRunDate).getTime() - new Date().getTime()>=86400000){
+    if(schedule.autoclose && schedule.interval !== 0 && new Date(schedule.nextRunDate).getTime() - new Date().getTime()>=86400000){
         ipcRenderer.invoke('closeApp')
         return;
     }else{
