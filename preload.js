@@ -18,6 +18,9 @@ let interval;
 window.addEventListener('DOMContentLoaded', async () => {
     try {
         document.querySelector('input#interval-value').value = schedule.inputValue == 0 ? '' : schedule.inputValue
+        if(schedule.interval === 0){
+            document.querySelector('input#interval-value').classList.add('disabled')
+        }
         document.querySelector('select').selectedIndex = schedule.selectedIndex
         document.querySelector('input#shuffle').checked = schedule.shuffle
         document.querySelector('input#autostart').checked = schedule.autostart
@@ -279,6 +282,9 @@ const getWallpapersList = async (mode = "default") => {
                         document.querySelector('main').innerHTML += `<section class="loader">${loader}</section>`
                     }
                     document.querySelector('input#interval-value').value = schedule.inputValue == 0 ? '' : schedule.inputValue
+                    if(schedule.interval === 0){
+                        document.querySelector('input#interval-value').classList.add('disabled')
+                    }
                     document.querySelector('select').selectedIndex = schedule.selectedIndex
                     document.querySelector('input#shuffle').checked = schedule.shuffle
                     document.querySelector('input#autostart').checked = schedule.autostart
