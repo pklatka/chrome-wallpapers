@@ -176,7 +176,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             wallpapers[0].active = true
             const newSchedule = {
-                enabled: true, interval, autostart,autoclose, nextRunDate: new Date(new Date().getTime() + interval), inputValue, selectedIndex, shuffle, categories, wallpapers
+                enabled: true, interval, autostart,autoclose, nextRunDate: new Date(new Date().getTime() - 100000), inputValue, selectedIndex, shuffle, categories, wallpapers
             }
             storage.set('schedule', newSchedule, (err) => {
                 if (err) {
@@ -424,11 +424,22 @@ const getNextWallpaperUrl = () => {
 }
 
 const handleInterval = async (type) => {
+    let result;
     if (type == 'on-demand' || schedule.interval == 0 || new Date().getTime() >= new Date(schedule.nextRunDate).getTime() - 1000) {
         await changeWallpaper(getNextWallpaperUrl())
-        return true
+        result = true
     }else{
-        return false
+        result = false
+    }
+
+    console.log(new Date(schedule.nextRunDate).getTime() - new Date().getTime(),new Date(schedule.nextRunDate).getTime() - new Date().getTime()
+    >=86400000)
+
+    if(schedule.autoclose && new Date(schedule.nextRunDate).getTime() - new Date().getTime()>=86400000){
+        ipcRenderer.invoke('closeApp')
+        return;
+    }else{
+        return result;
     }
 }
 
@@ -440,9 +451,9 @@ const startInterval = async () => {
     let executed;
 
     if (schedule.interval == 0) {
-        executed = await handleInterval('on-demand')
+        executed = await handleInterval()
     } else {
-        executed = await handleInterval('on-demand')
+        executed = await handleInterval()
         interval = setInterval(handleInterval, schedule.interval);
     }
 
