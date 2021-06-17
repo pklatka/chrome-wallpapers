@@ -1,6 +1,6 @@
 {
   "name": "Chrome-Wallpapers",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Chrome Wallpapers is a desktop app which allows to change your desktop wallpaper with photos available in Google Chrome",
   "main": "main.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "@electron-forge/maker-squirrel": "^6.0.0-beta.55",
     "@electron-forge/maker-wix": "^6.0.0-beta.55",
     "@electron-forge/maker-zip": "^6.0.0-beta.55",
-    "electron": "^12.0.9" 
+    "electron": "^12.0.9"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -37,7 +37,7 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "C:\\Users\\Patryk\\Desktop\\Chrome Wallpaper\\public\\img\\icon.ico",
+        "icon": "C:\\Users\\Patryk\\Desktop\\cw\\public\\img\\icon.ico",
         "name": "Chrome Wallpapers"
       },
       "makers": [
@@ -45,13 +45,13 @@
           "name": "@electron-forge/maker-wix",
           "config": {
             "language": 1033,
-            "manufacturer": "Chrome Wallpapers - Patryk Klatka",
+            "manufacturer": "Chrome Wallpapers",
             "name": "Chrome Wallpapers",
-            "appIconPath": "C:\\Users\\Patryk\\Desktop\\Chrome Wallpaper\\public\\img\\icon.ico",
-            "appUserModelId":"Chrome Wallpapers",
+            "appIconPath": "C:\\Users\\Patryk\\Desktop\\cw\\public\\img\\icon.ico",
+            "appUserModelId": "Chrome Wallpapers",
             "description": "Chrome Wallpapers",
             "exe": "Chrome Wallpapers",
-            "version": "1.2.0"
+            "version": "1.2.1"
           }
         },
         {
