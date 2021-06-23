@@ -10,7 +10,7 @@ function createWindow(show = true) {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         width: 920,
-        height: 670,
+        height: 690,
         show: false,
         paintWhenInitiallyHidden: false,
         autoHideMenuBar: true,
@@ -115,7 +115,7 @@ ipcMain.handle('openExternalBrowser', (event, url) => {
 })
 
 ipcMain.handle('closeApp', (event) => {
-    if(isRunningHidden){
+    if (isRunningHidden) {
         app.quit()
     }
 })

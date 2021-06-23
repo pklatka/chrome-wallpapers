@@ -13,12 +13,14 @@ let schedule = storage.getSync('schedule')
 
 const loader = '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>'
 const checked = '<div class="checked"></div>'
+const excluded = '<div class="checked excluded"></div>'
+
 let interval;
 
 window.addEventListener('DOMContentLoaded', async () => {
     try {
         document.querySelector('input#interval-value').value = schedule.inputValue == 0 ? '' : schedule.inputValue
-        if(schedule.interval === 0){
+        if (schedule.interval === 0) {
             document.querySelector('input#interval-value').classList.add('disabled')
         }
         document.querySelector('select').selectedIndex = schedule.selectedIndex
@@ -102,7 +104,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             if (!e.target.classList.contains('hide')) {
                 document.querySelectorAll('div.checked').forEach(el => {
-                    temporarySelected.push(el.parentElement)
+                    temporarySelected.push({ destiniation: el.parentElement, excluded: el.classList.contains('excluded') })
                     el.parentElement.innerHTML = ''
                 })
                 e.target.classList.add('hide')
@@ -110,7 +112,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                 // Read from file and select saved photos
                 schedule.wallpapers.forEach(el => {
                     if (el.type === 'wallpaper') {
-                        document.querySelector(`div[data-image-url="${el.imageUrl}"]`).innerHTML = checked
+                        if (el.excluded) {
+                            document.querySelector(`div[data-image-url="${el.imageUrl}"]`).innerHTML = excluded
+                        } else {
+                            document.querySelector(`div[data-image-url="${el.imageUrl}"]`).innerHTML = checked
+                        }
                     } else {
                         document.querySelector(`div[data-type="categories"][data-id="${el.id}"]`).innerHTML = checked
                     }
@@ -119,7 +125,9 @@ window.addEventListener('DOMContentLoaded', async () => {
                 document.querySelectorAll('div.checked').forEach(el => {
                     el.parentElement.innerHTML = ''
                 })
-                temporarySelected.forEach(el => el.innerHTML = checked)
+                temporarySelected.forEach(el => {
+                    el.destiniation.innerHTML = el.excluded ? excluded : checked
+                })
                 e.target.classList.remove('hide')
                 temporarySelected = []
                 e.target.textContent = 'SHOW SELECTED'
@@ -157,14 +165,26 @@ window.addEventListener('DOMContentLoaded', async () => {
                 notify("Time value must be greater than zero!", 2)
                 return;
             }
+
+            const wallpapersList = [...document.querySelectorAll('div.checked')]
+
+            if (wallpapersList.every(el => el.classList.contains('excluded'))) {
+                notify('You must select at least one wallpaper to be active', 2)
+                return;
+            }
+
             const interval = inputValue * Number(document.querySelector('select').value) * 1000
             const autoclose = document.querySelector('input#close').checked
             const shuffle = document.querySelector('input#shuffle').checked
             const categories = []
-            let wallpapers = [...document.querySelectorAll('div.checked')].map(el => {
+            let wallpapers = wallpapersList.map(el => {
                 let r;
                 if (el.parentElement.dataset.type === "wallpapers") {
-                    r = { imageUrl: el.parentElement.dataset.imageUrl, active: false, type: 'wallpaper' }
+                    if (el.classList.contains('excluded')) {
+                        r = { imageUrl: el.parentElement.dataset.imageUrl, excluded: true, active: false, type: 'wallpaper' }
+                    } else {
+                        r = { imageUrl: el.parentElement.dataset.imageUrl, excluded: false, active: false, type: 'wallpaper' }
+                    }
                 } else if (el.parentElement.dataset.type === "categories") {
                     categories.push(el.parentElement.dataset.id)
                     r = { id: el.parentElement.dataset.id, type: 'category' }
@@ -179,7 +199,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             wallpapers[0].active = true
             const newSchedule = {
-                enabled: true, interval, autostart,autoclose, nextRunDate: new Date(new Date().getTime() - 100000), inputValue, selectedIndex, shuffle, categories, wallpapers
+                enabled: true, interval, autostart, autoclose, nextRunDate: new Date(new Date().getTime() - 100000), inputValue, selectedIndex, shuffle, categories, wallpapers
             }
             storage.set('schedule', newSchedule, (err) => {
                 if (err) {
@@ -235,6 +255,11 @@ const addToSchedule = e => {
         }
     } else {
         if (e.target.innerHTML != '') {
+            if (e.target.innerHTML === checked) {
+                e.target.innerHTML = excluded
+                return;
+            }
+
             const categoryBlock = document.querySelector(`section#categories div[data-id="${e.target.dataset.id}"]`)
             if (categoryBlock.innerHTML != '') {
                 categoryBlock.innerHTML = ''
@@ -282,7 +307,7 @@ const getWallpapersList = async (mode = "default") => {
                         document.querySelector('main').innerHTML += `<section class="loader">${loader}</section>`
                     }
                     document.querySelector('input#interval-value').value = schedule.inputValue == 0 ? '' : schedule.inputValue
-                    if(schedule.interval === 0){
+                    if (schedule.interval === 0) {
                         document.querySelector('input#interval-value').classList.add('disabled')
                     }
                     document.querySelector('select').selectedIndex = schedule.selectedIndex
@@ -291,15 +316,15 @@ const getWallpapersList = async (mode = "default") => {
                     document.querySelector('input#close').checked = schedule.autoclose
                     const response = await fetch(settings.wallpapersListSource)
                     const data = await response.json()
-                    
-                    if(data.validUntil !== list.validUntil){
+
+                    if (data.validUntil !== list.validUntil) {
                         list = data
                         storage.set('wallpapers', data, (err) => {
                             if (err) {
                                 console.error(err)
                             }
                         })
-    
+
                         // Autoupdate category photos in schedule
                         if (Object.keys(schedule).length !== 0) {
                             const newSchedule = { ...schedule }
@@ -308,7 +333,7 @@ const getWallpapersList = async (mode = "default") => {
                                 if (wallpaperList) {
                                     wallpaperList.wallpapers.forEach(wallpaper => {
                                         if (!schedule.wallpapers.find(el => el.imageUrl == wallpaper.imageUrl)) {
-                                            newSchedule.wallpapers.push({ imageUrl: wallpaper.imageUrl, active: false, type: 'wallpaper' })
+                                            newSchedule.wallpapers.push({ imageUrl: wallpaper.imageUrl, excluded: false, active: false, type: 'wallpaper' })
                                         }
                                     })
                                 }
@@ -408,7 +433,7 @@ const getNextWallpaperUrl = () => {
     if (schedule.shuffle) {
         do {
             activeWallpaperIndex = Math.floor(Math.random() * wallpaperLength)
-        } while (schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper")
+        } while (schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper" || schedule.wallpapers[activeWallpaperIndex].excluded)
     } else {
         do {
             if (activeWallpaperIndex == wallpaperLength - 1) {
@@ -416,7 +441,7 @@ const getNextWallpaperUrl = () => {
             } else {
                 activeWallpaperIndex += 1;
             }
-        } while (schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper")
+        } while (schedule.wallpapers[activeWallpaperIndex].type !== "wallpaper" || schedule.wallpapers[activeWallpaperIndex].excluded)
     }
     schedule.wallpapers[activeWallpaperIndex].active = true
     schedule.nextRunDate = new Date(new Date().getTime() + schedule.interval)
@@ -434,14 +459,14 @@ const handleInterval = async (type) => {
     if (type == 'on-demand' || schedule.interval == 0 || new Date().getTime() >= new Date(schedule.nextRunDate).getTime() - 1000) {
         await changeWallpaper(getNextWallpaperUrl())
         result = true
-    }else{
+    } else {
         result = false
     }
 
-    if(schedule.autoclose && schedule.interval !== 0 && new Date(schedule.nextRunDate).getTime() - new Date().getTime()>=86400000){
+    if (schedule.autoclose && schedule.interval !== 0 && new Date(schedule.nextRunDate).getTime() - new Date().getTime() >= 86400000) {
         ipcRenderer.invoke('closeApp')
         return;
-    }else{
+    } else {
         return result;
     }
 }
@@ -470,7 +495,7 @@ ipcRenderer.on('next-wallpaper', async (event) => {
 const startup = async () => {
     const executed = await startInterval()
 
-    if(executed && schedule.autoclose){
+    if (executed && schedule.autoclose) {
         ipcRenderer.invoke('closeApp')
     }
 }
