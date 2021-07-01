@@ -1,6 +1,6 @@
 {
   "name": "Chrome-Wallpapers",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Chrome Wallpapers is a desktop app which allows to change your desktop wallpaper with photos available in Google Chrome",
   "main": "main.js",
   "scripts": {
@@ -51,7 +51,7 @@
             "appUserModelId": "Chrome Wallpapers",
             "description": "Chrome Wallpapers",
             "exe": "Chrome Wallpapers",
-            "version": "1.2.2"
+            "version": "1.2.3"
           }
         },
         {
