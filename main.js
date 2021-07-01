@@ -3,8 +3,8 @@ const { app, BrowserWindow, shell, ipcMain, Tray, Menu } = require('electron')
 const path = require('path')
 const exeName = path.basename(process.execPath)
 
-app.setAppUserModelId('Google Wallpapers')
-app.setName('Google Wallpapers')
+app.setAppUserModelId('Chrome Wallpapers')
+app.setName('Chrome Wallpapers')
 
 function createWindow(show = true) {
     // Create the browser window.
