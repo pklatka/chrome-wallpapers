@@ -33,18 +33,13 @@ const main = async () => {
             })
 
             for (const entity of fetchConfig.data.entities) {
-                // Find original and 4K wallpaper
-                // Always choose 4K rather than original
-                let url4K = "", urlOriginal = ""
+                let urlOriginal = ""
 
                 for (const wallpaper of entity.entity.variations[0].resolutions) {
                     if (wallpaper.resolutionLabel == "Original") {
                         urlOriginal = wallpaper.url
                         break;
                     }
-                    // if (wallpaper.resolutionLabel == "4K") {
-                    //     url4K = wallpaper.url
-                    // }
                 }
 
                 wallpaperhubWallpapers.push({
