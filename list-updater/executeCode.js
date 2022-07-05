@@ -15,7 +15,7 @@ const getWallpapers = async () => {
     for(const category of categories){
         if(category.hasAttribute('title')){
             category.click()
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 2000));
             const categoryUrl = category.innerHTML
             const thumbnailImageUrl = categoryUrl.slice(categoryUrl.indexOf('image?')+6,categoryUrl.indexOf('-mv')+3)
             const categoryTitle = category.getAttribute('title')
