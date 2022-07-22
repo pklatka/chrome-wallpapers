@@ -17,7 +17,7 @@ const CLASSES = {
     BACK_BTN_ID: 'menu-back'
 }
 
-const chromeArguments = ['--window-position=-10000000,0']
+const chromeArguments = ['--window-position=-10000000,0', '--disable-site-isolation-trials']
 
 const chromeOptions = new chrome.Options().addArguments(chromeArguments)
 
